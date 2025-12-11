@@ -1,0 +1,584 @@
+{% extends "user_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+    {% csrf_token %}
+    <!-- Django Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Emergency Quick Access Card -->
+    <div class="card border-danger mb-4">
+        <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fas fa-bell me-2"></i> Emergency Quick Access</h4>
+            <span class="badge bg-warning">EMERGENCY</span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="emergency-qr-section text-center">
+                        <h5 class="text-danger mb-3">Emergency QR Code</h5>
+                        <div id="qrCodeContainer" class="mb-3">
+                            <div id="emergencyQrCode" style="display: inline-block;">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Click "Generate QR" to create your emergency QR code
+                                </div>
+                            </div>
+                        </div>
+                        <p class="small text-muted mb-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Scan this code in emergencies to access critical medical information
+                        </p>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-primary btn-sm" onclick="generateEmergencyQR()">
+                                <i class="fas fa-sync-alt me-1"></i> Generate QR
+                            </button>
+                            <button class="btn btn-outline-success btn-sm" onclick="downloadQRCode()" id="downloadBtn" disabled>
+                                <i class="fas fa-download me-1"></i> Download
+                            </button>
+                            <button class="btn btn-outline-info btn-sm" onclick="shareQRCode()" id="shareBtn" disabled>
+                                <i class="fas fa-share me-1"></i> Share
+                            </button>
+                        </div>
+                        <div class="mt-2">
+                            <a href="{{ emergency_access_url }}" target="_blank" 
+                               class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-external-link-alt me-1"></i> Test Emergency Access
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="emergency-contacts">
+                        <h5 class="text-danger mb-3">Emergency Contacts</h5>
+                        {% if emergency_contacts %}
+                            {% for contact in emergency_contacts %}
+                            <div class="contact-card border rounded p-3 mb-2 bg-light">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong class="text-primary">{{ contact.name }}</strong> 
+                                        <span class="badge bg-secondary ms-2">{{ contact.relationship }}</span>
+                                        {% if contact.is_primary %}
+                                        <span class="badge bg-success ms-1">Primary</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary" onclick="callNumber('{{ contact.phone }}')">
+                                            <i class="fas fa-phone"></i>
+                                        </button>
+                                        {% if contact.email %}
+                                        <button class="btn btn-outline-secondary" onclick="sendEmail('{{ contact.email }}')">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <i class="fas fa-phone text-success me-1"></i> 
+                                    <a href="tel:{{ contact.phone }}" class="text-decoration-none">{{ contact.phone }}</a>
+                                    {% if contact.email %}
+                                    <br>
+                                    <i class="fas fa-envelope text-primary me-1"></i> 
+                                    <a href="mailto:{{ contact.email }}" class="text-decoration-none">{{ contact.email }}</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No emergency contacts added yet.
+                            </div>
+                        {% endif %}
+                        <button class="btn btn-primary btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                            <i class="fas fa-plus me-1"></i> Add Emergency Contact
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rest of your content remains the same -->
+    <!-- Medical Information & Emergency Services -->
+    <div class="row">
+        <!-- Medical Information -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="text-primary mb-0">
+                        <i class="fas fa-file-medical me-2"></i>Critical Medical Information
+                    </h5>
+                    <span class="badge bg-info">MEDICAL</span>
+                </div>
+                <div class="card-body">
+                    {% if emergency_info %}
+                    <div class="medical-info-grid">
+                        <div class="info-item border-bottom pb-2 mb-2">
+                            <strong class="text-success">Blood Type:</strong> 
+                            <span class="badge bg-danger ms-2">{{ emergency_info.blood_type|default:"Not specified" }}</span>
+                        </div>
+                        <div class="info-item border-bottom pb-2 mb-2">
+                            <strong class="text-success">Allergies:</strong> 
+                            <div class="mt-1">{{ emergency_info.allergies|default:"None"|linebreaks }}</div>
+                        </div>
+                        <div class="info-item border-bottom pb-2 mb-2">
+                            <strong class="text-success">Current Medications:</strong>
+                            <div class="mt-1">{{ emergency_info.current_medications|default:"None"|linebreaks }}</div>
+                        </div>
+                        <div class="info-item border-bottom pb-2 mb-2">
+                            <strong class="text-success">Chronic Conditions:</strong>
+                            <div class="mt-1">{{ emergency_info.chronic_conditions|default:"None"|linebreaks }}</div>
+                        </div>
+                        <div class="info-item">
+                            <strong class="text-success">Organ Donor:</strong>
+                            <span class="badge {% if emergency_info.organ_donor %}bg-success{% else %}bg-secondary{% endif %} ms-2">
+                                {{ emergency_info.organ_donor|yesno:"Yes,No" }}
+                            </span>
+                        </div>
+                        {% if emergency_info.emergency_instructions %}
+                        <div class="info-item border-top pt-2 mt-2">
+                            <strong class="text-success">Special Instructions:</strong>
+                            <div class="mt-1 alert alert-warning p-2 small">
+                                {{ emergency_info.emergency_instructions }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-exclamation-triangle text-warning fa-3x mb-3"></i>
+                        <h6 class="text-muted">No emergency medical information set up</h6>
+                        <p class="small text-muted">Add your critical medical information for emergency situations</p>
+                    </div>
+                    {% endif %}
+                    <div class="mt-3">
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#medicalInfoModal">
+                            <i class="fas fa-edit me-1"></i> Edit Medical Information
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Emergency Services -->
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="text-primary mb-0">
+                        <i class="fas fa-ambulance me-2"></i>Emergency Services
+                    </h5>
+                    <span class="badge bg-danger">URGENT</span>
+                </div>
+                <div class="card-body">
+                    <div class="emergency-services">
+                        <!-- Quick Actions -->
+                        <div class="quick-actions mb-4">
+                            <button class="btn btn-outline-danger w-100 mb-2 py-2" onclick="callEmergency()">
+                                <i class="fas fa-phone-alt me-2"></i> Emergency Call: 112
+                            </button>
+                            <button class="btn btn-outline-warning w-100 mb-2 py-2" onclick="findNearbyHospitals()">
+                                <i class="fas fa-hospital me-2"></i> Find Nearest Hospital
+                            </button>
+                            <button class="btn btn-outline-info w-100 mb-2 py-2" onclick="findNearbyPharmacies()">
+                                <i class="fas fa-clinic-medical me-2"></i> Find 24/7 Pharmacy
+                            </button>
+                            <button class="btn btn-outline-success w-100 mb-2 py-2" onclick="shareLocation()">
+                                <i class="fas fa-location-arrow me-2"></i> Share My Location
+                            </button>
+                        </div>
+
+                        <!-- Emergency Instructions -->
+                        <div class="emergency-instructions">
+                            <h6 class="text-danger mb-2">In Case of Emergency:</h6>
+                            <ul class="list-unstyled small">
+                                <li class="mb-1"><i class="fas fa-check text-success me-2"></i>Stay calm and assess the situation</li>
+                                <li class="mb-1"><i class="fas fa-check text-success me-2"></i>Call emergency services immediately</li>
+                                <li class="mb-1"><i class="fas fa-check text-success me-2"></i>Show your QR code to first responders</li>
+                                <li class="mb-1"><i class="fas fa-check text-success me-2"></i>Contact your emergency contacts</li>
+                                <li class="mb-1"><i class="fas fa-check text-success me-2"></i>Follow medical instructions if available</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals (same as before) -->
+<!-- Add Contact Modal -->
+<div class="modal fade" id="addContactModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Emergency Contact</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'add_emergency_contact' %}" id="addContactForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Relationship *</label>
+                        <select class="form-control" name="relationship" required>
+                            <option value="">Select Relationship</option>
+                            <option value="Spouse">Spouse</option>
+                            <option value="Parent">Parent</option>
+                            <option value="Child">Child</option>
+                            <option value="Sibling">Sibling</option>
+                            <option value="Friend">Friend</option>
+                            <option value="Colleague">Colleague</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email (Optional)</label>
+                        <input type="email" class="form-control" name="email">
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_primary" id="isPrimary">
+                        <label class="form-check-label" for="isPrimary">
+                            Set as primary emergency contact
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Contact</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Medical Information Modal -->
+<div class="modal fade" id="medicalInfoModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Medical Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'update_medical_info' %}" id="medicalInfoForm">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Blood Type</label>
+                            <select class="form-control" name="blood_type">
+                                <option value="">Select Blood Type</option>
+                                <option value="A+" {% if emergency_info.blood_type == "A+" %}selected{% endif %}>A+</option>
+                                <option value="A-" {% if emergency_info.blood_type == "A-" %}selected{% endif %}>A-</option>
+                                <option value="B+" {% if emergency_info.blood_type == "B+" %}selected{% endif %}>B+</option>
+                                <option value="B-" {% if emergency_info.blood_type == "B-" %}selected{% endif %}>B-</option>
+                                <option value="AB+" {% if emergency_info.blood_type == "AB+" %}selected{% endif %}>AB+</option>
+                                <option value="AB-" {% if emergency_info.blood_type == "AB-" %}selected{% endif %}>AB-</option>
+                                <option value="O+" {% if emergency_info.blood_type == "O+" %}selected{% endif %}>O+</option>
+                                <option value="O-" {% if emergency_info.blood_type == "O-" %}selected{% endif %}>O-</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Organ Donor</label>
+                            <select class="form-control" name="organ_donor">
+                                <option value="false" {% if not emergency_info.organ_donor %}selected{% endif %}>No</option>
+                                <option value="true" {% if emergency_info.organ_donor %}selected{% endif %}>Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Allergies</label>
+                        <textarea class="form-control" name="allergies" rows="3" 
+                                  placeholder="List any allergies (medications, food, environmental)">{{ emergency_info.allergies|default:"" }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Current Medications</label>
+                        <textarea class="form-control" name="current_medications" rows="3"
+                                  placeholder="List current medications with dosages">{{ emergency_info.current_medications|default:"" }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Chronic Conditions</label>
+                        <textarea class="form-control" name="chronic_conditions" rows="3"
+                                  placeholder="List any chronic health conditions">{{ emergency_info.chronic_conditions|default:"" }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Emergency Instructions</label>
+                        <textarea class="form-control" name="emergency_instructions" rows="2"
+                                  placeholder="Any special instructions for emergency responders">{{ emergency_info.emergency_instructions|default:"" }}</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Medical Information</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Include QR Code Library -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+<script>
+// Global variables
+let currentQRCodeData = '';
+
+// Get CSRF token function
+function getCSRFToken() {
+    const name = 'csrftoken';
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Generate QR Code using server API
+async function generateEmergencyQR() {
+    const generateBtn = document.querySelector('button[onclick="generateEmergencyQR()"]');
+    const originalText = generateBtn.innerHTML;
+    const qrContainer = document.getElementById('emergencyQrCode');
+    
+    try {
+        // Show loading state
+        generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Generating...';
+        generateBtn.disabled = true;
+        qrContainer.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Generating QR Code...</p>
+            </div>
+        `;
+
+        const response = await fetch('{% url "generate_qr_code" %}', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCSRFToken(),
+                'Accept': 'application/json'
+            },
+            credentials: 'include'  // Include cookies in the request
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Network response was not ok');
+        }
+        
+        if (data.login_required) {
+            window.location.href = '{% url "user_login" %}';
+            return;
+        }
+        
+        if (data.success) {
+            qrContainer.innerHTML = `
+                <div class="text-center">
+                    <img src="${data.qr_code}" alt="Emergency QR Code" 
+                         class="img-fluid border rounded shadow-sm" 
+                         style="max-width: 200px;">
+                    <div class="mt-3">
+                        <div class="badge bg-primary mb-2">Access Code: ${data.access_code}</div>
+                        <div class="small text-muted">Expires: ${data.expires_at}</div>
+                        <div class="small text-muted mt-2">Scan this code in case of emergency</div>
+                    </div>
+                </div>
+            `;
+            currentQRCodeData = data.qr_data;
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('shareBtn').disabled = false;
+        } else {
+            throw new Error(data.error || 'Failed to generate QR code');
+        }
+    } catch (error) {
+        console.error('QR Code generation error:', error);
+        const errorMessage = error.message || 'Failed to generate QR code. Please try again.';
+        qrContainer.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                ${errorMessage}
+                <button class="btn btn-outline-danger btn-sm mt-2 ms-2" onclick="generateEmergencyQR()">
+                    <i class="fas fa-sync"></i> Try Again
+                </button>
+            </div>`;
+    } finally {
+        // Restore button state
+        generateBtn.innerHTML = originalText;
+        generateBtn.disabled = false;
+    }
+}
+
+// Download QR Code as PNG
+function downloadQRCode() {
+    const qrImage = document.querySelector('#emergencyQrCode img');
+    if (qrImage) {
+        const link = document.createElement('a');
+        link.download = 'emergency-medical-qr.png';
+        link.href = qrImage.src;
+        link.click();
+    } else {
+        alert('Please generate QR code first.');
+    }
+}
+
+// Share QR Code
+function shareQRCode() {
+    if (currentQRCodeData) {
+        if (navigator.share) {
+            navigator.share({
+                title: 'My Emergency Medical Information',
+                text: 'Scan this QR code in case of emergency to access my medical information',
+                url: currentQRCodeData
+            });
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(currentQRCodeData).then(() => {
+                alert('Emergency access link copied to clipboard!');
+            });
+        }
+    } else {
+        alert('Please generate QR code first.');
+    }
+}
+
+// Emergency Services Functions (same as before)
+function callEmergency() {
+    if (confirm('Call emergency services (112)?')) {
+        window.location.href = "tel:112";
+    }
+}
+
+function findNearbyHospitals() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            window.open(`https://www.google.com/maps/search/hospitals/@${lat},${lng},15z`, '_blank');
+        }, function(error) {
+            alert('Unable to get your location. Please enable location services.');
+        });
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
+
+function findNearbyPharmacies() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            window.open(`https://www.google.com/maps/search/pharmacy/@${lat},${lng},15z`, '_blank');
+        }, function(error) {
+            alert('Unable to get your location. Please enable location services.');
+        });
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+}
+
+function shareLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const locationUrl = `https://maps.google.com/?q=${lat},${lng}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'My Current Location',
+                    text: 'Here is my current location in case of emergency',
+                    url: locationUrl
+                });
+            } else {
+                navigator.clipboard.writeText(locationUrl).then(() => {
+                    alert('Location link copied to clipboard!');
+                });
+            }
+        });
+    }
+}
+
+// Contact Functions
+function callNumber(phoneNumber) {
+    window.location.href = `tel:${phoneNumber}`;
+}
+
+function sendEmail(email) {
+    window.location.href = `mailto:${email}`;
+}
+
+// Generate QR code when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-generate QR code on page load
+    generateEmergencyQR();
+});
+
+// Form submission handlers
+document.getElementById('addContactForm')?.addEventListener('submit', function(e) {
+    // Form will submit normally via Django
+    console.log('Adding emergency contact...');
+});
+
+document.getElementById('medicalInfoForm')?.addEventListener('submit', function(e) {
+    // Form will submit normally via Django
+    console.log('Updating medical information...');
+});
+</script>
+
+<style>
+.medical-info-grid .info-item {
+    padding: 8px 0;
+}
+
+.contact-card:hover {
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    transition: all 0.2s ease;
+}
+
+.emergency-qr-section {
+    padding: 20px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.quick-actions .btn {
+    border-width: 2px;
+    font-weight: 500;
+}
+
+.quick-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}

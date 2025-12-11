@@ -1,0 +1,308 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Dashboard | MediFutura</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* Root Colors matching registration form */
+:root {
+    --primary-bg: #f8f9fa;
+    --secondary-bg: #e9ecef;
+    --accent-blue: #007bff;
+    --accent-purple: #6f42c1;
+    --accent-green: #28a745;
+    --text-color: #212529;
+    --navbar-bg: #e7f1ff;
+}
+
+/* Reset */
+body, html { margin:0; padding:0; font-family:'Poppins',sans-serif; background: var(--primary-bg); color: var(--text-color); }
+a { text-decoration:none; }
+
+/* Navbar */
+.navbar {
+    background: var(--navbar-bg) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding:20px 30px;
+}
+.navbar-brand { font-weight:700; color: var(--text-color) !important; font-size:24px; }
+.navbar .user-info { margin-left:auto; display:flex; align-items:center; gap:15px; font-weight:500; }
+.navbar .user-info .btn { padding:6px 14px; font-size:14px; }
+
+/* Dashboard Layout */
+.dashboard-container { display:flex; min-height:100vh; }
+
+/* Sidebar */
+.sidebar {
+    width:260px; background: var(--secondary-bg); color:#495057; padding-top:25px; transition:all 0.3s;
+    border-right:1px solid #dee2e6; box-shadow:2px 0 6px rgba(0,0,0,0.05);
+}
+.sidebar a {
+    display:flex; align-items:center; padding:14px 22px; color:#495057; font-weight:500; border-left:4px solid transparent;
+    border-radius:6px; margin:6px 10px; transition:all 0.3s;
+}
+.sidebar a:hover { 
+    background:#ffffff; 
+    color: var(--accent-blue); 
+    border-left:4px solid var(--accent-blue); 
+    padding-left:28px; 
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+.sidebar a.active { 
+    background:#ffffff; 
+    color: var(--accent-blue); 
+    border-left:4px solid var(--accent-blue); 
+    padding-left:28px; 
+}
+
+/* Main Content */
+.main { flex:1; padding:30px; overflow-y:auto; }
+
+/* Cards */
+.card-custom {
+    border-radius:12px; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.05);
+    padding:25px; margin-bottom:20px; background:#ffffff; transition:all 0.3s ease;
+}
+.card-custom:hover { transform:translateY(-3px); box-shadow:0 10px 24px rgba(0,0,0,0.08); }
+.card-custom h5 { font-weight:600; margin-bottom:12px; font-size:16px; color: var(--accent-blue); }
+.card-custom p { font-size:20px; font-weight:600; color: var(--text-color); margin:0; }
+
+/* Widgets */
+.widget {
+    padding:18px; border-radius:12px; background:#ffffff; box-shadow:0 4px 12px rgba(0,0,0,0.05); margin-bottom:20px;
+    transition:all 0.3s ease;
+}
+.widget:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.08); }
+.widget h6 { font-weight:600; font-size:14px; margin-bottom:8px; color: var(--accent-blue); }
+.widget p { font-size:18px; font-weight:500; color: var(--text-color); margin:0; }
+
+/* Tables */
+.table-custom {
+    background:#ffffff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05);
+}
+.table-custom th { background: var(--accent-blue); color:#ffffff; font-weight:500; }
+.table-custom td { color:#212529; }
+
+/* Buttons */
+.btn-primary-custom { background: var(--accent-blue); color:#fff; border:none; border-radius:8px; padding:8px 16px; }
+.btn-primary-custom:hover { background:#0056b3; }
+
+/* Charts */
+.chart-container { background:#ffffff; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.05); padding:20px; margin-bottom:20px; }
+
+/* Quick Actions */
+.quick-actions a {
+    display:inline-block; margin:5px; padding:10px 16px; border-radius:8px; background: var(--accent-blue); color:#fff;
+    transition:all 0.3s; font-weight:500;
+}
+.quick-actions a:hover { background: #0056b3; text-decoration:none; }
+
+/* Footer */
+.footer { text-align:center; margin-top:40px; font-size:14px; color:#6c757d; }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="{% url 'home' %}">MediShare</a>
+    <div class="user-info">
+        <span>Welcome, <strong>{{ request.session.user_name }}</strong></span>
+        {% if unread_notifications > 0 %}
+        <span class="badge bg-danger me-2">{{ unread_notifications }}</span>
+        {% endif %}
+        <a href="{% url 'user_logout' %}" class="btn btn-primary btn-sm">Logout</a>
+    </div>
+</nav>
+
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="user_dashboard" class="active"><i class="fas fa-home me-2"></i> Dashboard</a>
+        <a href="#"><i class="fas fa-file-medical me-2"></i> Medical Records</a>
+        <a href="{% url 'upload_record' %}"><i class="fas fa-upload me-2"></i> Upload Data</a>
+        <a href="{% url 'view_records' %}"><i class="fas fa-file-medical me-2"></i> My Records</a>
+        <a href="{% url 'user_appoinment' %}"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
+        <a href="{% url 'my_appointments' %}"><i class="fas fa-calendar-check me-2"></i>My Appointments</a>
+        <a href="{% url 'user_notifications' %}"><i class="fas fa-bell me-2"></i> Notifications {% if unread_notifications %}<span class="badge bg-danger">{{ unread_notifications }}</span>{% endif %}</a>
+        <a href="{% url 'update_profile' %}"><i class="fas fa-user-md me-2"></i> Update Profile</a>
+        <a href="{% url 'emergency_dashboard' %}"><i class="fas fa-cog me-2"></i> Emergency</a>
+    </div>
+    {% block content %}
+
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Top Cards -->
+        <div class="row mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="card-custom">
+                    <h5><i class="fas fa-calendar-check me-2"></i>Total Appointments</h5>
+                    <p>{{ total_appointments|default:"0" }}</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card-custom">
+                    <h5><i class="fas fa-file-medical me-2"></i>Uploaded Records</h5>
+                    <p>{{ total_records|default:"0" }}</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card-custom">
+                    <h5><i class="fas fa-user-md me-2"></i>Doctors Consulted</h5>
+                    <p>{{ doctors_consulted|default:"0" }}</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="card-custom">
+                    <h5><i class="fas fa-shield-alt me-2"></i>Security Status</h5>
+                    <p class="text-success">Active</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Widgets -->
+        <div class="row">
+            <div class="col-lg-4 col-md-6">
+                <div class="widget">
+                    <h6><i class="fas fa-calendar-alt me-2"></i>Next Appointment</h6>
+                    {% if next_appointment %}
+                        <p>{{ next_appointment.date|date:"M d, Y" }} at {{ next_appointment.time|time:"g:i A" }}</p>
+                        <small class="text-muted">Dr. {{ next_appointment.doctor.name }}</small>
+                    {% else %}
+                        <p>No upcoming appointments</p>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="widget">
+                    <h6><i class="fas fa-heartbeat me-2"></i>Health Tips</h6>
+                    <p>Stay hydrated and active</p>
+                    <small class="text-muted">Regular checkups recommended</small>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="widget">
+                    <h6><i class="fas fa-shield-alt me-2"></i>Security Status</h6>
+                    <p class="text-success">Active</p>
+                    <small class="text-muted">Your data is protected</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <h5 class="mt-4 mb-2">Quick Actions</h5>
+        <div class="quick-actions mb-4">
+            <a href="{% url 'user_appoinment' %}"><i class="fas fa-calendar-plus me-1"></i>Book Appointment</a>
+            <a href="{% url 'upload_record' %}"><i class="fas fa-upload me-1"></i>Upload Records</a>
+            <a href="{% url 'view_records' %}"><i class="fas fa-file-medical me-1"></i>View Records</a>
+            <a href="{% url 'my_appointments' %}"><i class="fas fa-calendar-check me-1"></i>My Appointments</a>
+        </div>
+
+        <!-- Charts -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="chart-container"><canvas id="appointmentsChart"></canvas></div>
+            </div>
+            <div class="col-lg-6">
+                <div class="chart-container"><canvas id="healthStatsChart"></canvas></div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Table -->
+        <h5 class="mt-4 mb-2">Recent Appointments</h5>
+        <div class="row">
+            <div class="col-12">
+                <div class="table-custom">
+                    {% if recent_appointments %}
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Doctor</th>
+                                    <th>Specialization</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for appointment in recent_appointments %}
+                                <tr>
+                                    <td>{{ appointment.date|date:"M d, Y" }}</td>
+                                    <td>{{ appointment.time|time:"g:i A" }}</td>
+                                    <td>Dr. {{ appointment.doctor.name }}</td>
+                                    <td>{{ appointment.doctor.specialization }}</td>
+                                    <td>
+                                        <span class="badge {% if appointment.status == 'booked' %}bg-primary{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-success{% endif %}">
+                                            {{ appointment.status|title }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="text-center p-4">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No appointments found. <a href="{% url 'user_appoinment' %}">Book your first appointment</a></p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">&copy; 2025 MediFutura. All Rights Reserved.</div>
+    </div>
+</div>
+{% endblock %}
+
+<script>
+// Appointments Line Chart
+const ctx1 = document.getElementById('appointmentsChart').getContext('2d');
+new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: ['Sep 1','Sep 7','Sep 14','Sep 21','Sep 28'],
+        datasets: [{
+            label: 'Appointments',
+            data: [5,7,8,10,6],
+            backgroundColor: 'rgba(0,123,255,0.2)',
+            borderColor: 'rgba(0,123,255,1)',
+            borderWidth: 2,
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true, stepSize:2}} }
+});
+
+// Health Stats Bar Chart
+const ctx2 = document.getElementById('healthStatsChart').getContext('2d');
+new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: ['BP','Sugar','Cholesterol','Weight','BMI'],
+        datasets: [{
+            label: 'Health Metrics',
+            data: [120,90,180,70,24],
+            backgroundColor: [
+                'rgba(0,123,255,0.7)','rgba(111,66,193,0.7)','rgba(40,167,69,0.7)','rgba(0,123,255,0.7)','rgba(111,66,193,0.7)'
+            ],
+            borderColor: [
+                'rgba(0,123,255,1)','rgba(111,66,193,1)','rgba(40,167,69,1)','rgba(0,123,255,1)','rgba(111,66,193,1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true}} }
+});
+</script>
+
+</body>
+</html>

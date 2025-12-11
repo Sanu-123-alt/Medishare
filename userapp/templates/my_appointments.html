@@ -1,0 +1,40 @@
+{% extends "user_dashboard.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2>My Appointments</h2>
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        <th>Doctor</th>
+        <th>Specialization</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for app in appointments %}
+      <tr>
+        <td>{{ app.doctor.name }}</td>
+        <td>{{ app.doctor.specialization }}</td>
+        <td>{{ app.date }}</td>
+        <td>{{ app.time }}</td>
+        <td>{{ app.reason }}</td>
+        <td>{{ app.status }}</td>
+        <td>
+          {% if app.status == "booked" %}
+          <a href="{% url 'cancel_appointment' app.id %}" class="btn btn-danger btn-sm">Cancel</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center">No appointments found</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

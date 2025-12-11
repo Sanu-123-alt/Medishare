@@ -1,0 +1,207 @@
+{% extends 'adminapp/base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - MedAdmin{% endblock %}
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <!-- Statistics Cards -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-600 text-sm">Total Hospitals</p>
+                <h3 class="text-3xl font-bold text-gray-800">{{ total_hospitals }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-hospital-alt text-blue-500 text-xl"></i>
+            </div>
+        </div>
+        <p class="text-green-600 text-sm mt-2">
+            <i class="fas fa-arrow-up"></i> Active
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-600 text-sm">Total Doctors</p>
+                <h3 class="text-3xl font-bold text-gray-800">{{ total_doctors }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-user-md text-green-500 text-xl"></i>
+            </div>
+        </div>
+        <p class="text-green-600 text-sm mt-2">
+            <i class="fas fa-arrow-up"></i> Active
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-600 text-sm">Total Users</p>
+                <h3 class="text-3xl font-bold text-gray-800">{{ total_users }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-users text-purple-500 text-xl"></i>
+            </div>
+        </div>
+        <p class="text-green-600 text-sm mt-2">
+            <i class="fas fa-arrow-up"></i> Registered
+        </p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-gray-600 text-sm">Total Appointments</p>
+                <h3 class="text-3xl font-bold text-gray-800">{{ total_appointments }}</h3>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                <i class="fas fa-calendar-check text-orange-500 text-xl"></i>
+            </div>
+        </div>
+        <p class="text-green-600 text-sm mt-2">
+            <i class="fas fa-arrow-up"></i> Booked
+        </p>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <!-- Recent Activities -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Recent Activities</h3>
+            <a href="{% url 'activity_list' %}" class="text-blue-500 hover:text-blue-700 text-sm">View All</a>
+        </div>
+        <div class="space-y-4">
+            {% for activity in recent_activities %}
+            <div class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-history text-blue-500"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-gray-800 font-medium">{{ activity.action }}</p>
+                    <p class="text-gray-500 text-sm">{{ activity.admin.username }} • {{ activity.timestamp|timesince }} ago</p>
+                    {% if activity.ip_address %}
+                    <p class="text-gray-400 text-xs">IP: {{ activity.ip_address }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No recent activities</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Notifications -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Recent Notifications</h3>
+            <a href="{% url 'notification_list' %}" class="text-blue-500 hover:text-blue-700 text-sm">View All</a>
+        </div>
+        <div class="space-y-4">
+            {% for notification in recent_notifications %}
+            <div class="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 {% if not notification.is_read %}bg-blue-50 border-l-4 border-blue-500{% endif %}">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
+                    {% if notification.notification_type == 'user_registration' %}bg-green-100 text-green-500
+                    {% elif notification.notification_type == 'doctor_registration' %}bg-blue-100 text-blue-500
+                    {% elif notification.notification_type == 'hospital_registration' %}bg-purple-100 text-purple-500
+                    {% else %}bg-orange-100 text-orange-500{% endif %}">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-gray-800 font-medium">{{ notification.title }}</p>
+                    <p class="text-gray-600 text-sm">{{ notification.message }}</p>
+                    <p class="text-gray-400 text-xs">{{ notification.created_at|timesince }} ago</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No notifications</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Recent Hospitals -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Recent Hospitals</h3>
+            <a href="{% url 'hospital_list' %}" class="text-blue-500 hover:text-blue-700 text-sm">View All</a>
+        </div>
+        <div class="space-y-4">
+            {% for hospital in recent_hospitals %}
+            <div class="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                {% if hospital.image %}
+                <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}" class="w-12 h-12 rounded-lg object-cover">
+                {% else %}
+                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-hospital text-gray-400"></i>
+                </div>
+                {% endif %}
+                <div class="flex-1">
+                    <p class="text-gray-800 font-medium">{{ hospital.name }}</p>
+                    <p class="text-gray-500 text-sm">{{ hospital.location }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No hospitals registered</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Doctors -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Recent Doctors</h3>
+            <a href="{% url 'doctor_list' %}" class="text-blue-500 hover:text-blue-700 text-sm">View All</a>
+        </div>
+        <div class="space-y-4">
+            {% for doctor in recent_doctors %}
+            <div class="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                {% if doctor.image %}
+                <img src="{{ doctor.image.url }}" alt="{{ doctor.name }}" class="w-12 h-12 rounded-lg object-cover">
+                {% else %}
+                <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-md text-gray-400"></i>
+                </div>
+                {% endif %}
+                <div class="flex-1">
+                    <p class="text-gray-800 font-medium">Dr. {{ doctor.name }}</p>
+                    <p class="text-gray-500 text-sm">{{ doctor.specialization }}</p>
+                    <p class="text-gray-400 text-xs">{{ doctor.hospital.name }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No doctors registered</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Users -->
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold text-gray-800">Recent Users</h3>
+            <a href="{% url 'user_list' %}" class="text-blue-500 hover:text-blue-700 text-sm">View All</a>
+        </div>
+        <div class="space-y-4">
+            {% for user in recent_users %}
+            <div class="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user text-purple-500"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-gray-800 font-medium">{{ user.fullname }}</p>
+                    <p class="text-gray-500 text-sm">{{ user.email }}</p>
+                    <p class="text-gray-400 text-xs">Joined {{ user.created_at|timesince }} ago</p>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center py-4">No users registered</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

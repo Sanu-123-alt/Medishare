@@ -1,0 +1,937 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediShare - Hospital Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <!-- Custom CSS -->
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --primary-light: #e8f2ff;
+      --secondary: #6c757d;
+      --success: #198754;
+      --info: #0dcaf0;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --sidebar-width: 260px;
+      --sidebar-collapsed-width: 70px;
+      --topbar-height: 70px;
+      --card-radius: 15px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fb;
+      color: #344767;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary) 0%, #0a58ca 100%);
+      color: white;
+      transition: var(--transition);
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar.collapsed .logo span,
+    .sidebar.collapsed .menu span,
+    .sidebar.collapsed .sidebar-footer {
+      display: none;
+    }
+
+    .logo {
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo i {
+      font-size: 1.75rem;
+    }
+
+    .logo span {
+      font-size: 1.25rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 1rem 0;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .menu li {
+      margin-bottom: 0.25rem;
+    }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1.25rem;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .menu a:hover,
+    .menu li.active a {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-left: 4px solid white;
+    }
+
+    .menu i {
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      font-size: 0.75rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      transition: var(--transition);
+      min-height: 100vh;
+    }
+
+    .sidebar.collapsed + .main-content {
+      margin-left: var(--sidebar-collapsed-width);
+    }
+
+    /* Topbar */
+    .topbar {
+      height: var(--topbar-height);
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .toggle-btn:hover {
+      background-color: var(--light);
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .icon-btn:hover {
+      background-color: var(--light);
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user span a {
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: var(--light);
+      color: var(--dark);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+      background-color: #e9ecef;
+    }
+
+    /* Content Area */
+    .content-area {
+      padding: 1.5rem;
+    }
+
+    /* Cards Grid */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+      transition: var(--transition);
+      border: none;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-card {
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stat-card i {
+      font-size: 2.5rem;
+      color: var(--primary);
+    }
+
+    .stat-card-content h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: var(--dark);
+    }
+
+    .stat-card-content p {
+      color: var(--secondary);
+      margin: 0;
+    }
+
+    .feature-card {
+      padding: 1.5rem;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 1rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+      flex: 1;
+      min-width: 120px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-2px);
+      color: white;
+    }
+
+    .activity-log ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .activity-log li {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #edf2f9;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .activity-log li:last-child {
+      border-bottom: none;
+    }
+
+    .activity-log i {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.875rem;
+    }
+
+    .activity-log .fa-user-plus {
+      background-color: var(--success);
+    }
+
+    .activity-log .fa-calendar-check {
+      background-color: var(--info);
+    }
+
+    .activity-log .fa-file-medical {
+      background-color: var(--warning);
+    }
+
+    .activity-log .fa-bell {
+      background-color: var(--danger);
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-content p {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+
+    .activity-time {
+      font-size: 0.75rem;
+      color: var(--secondary);
+    }
+
+    .status-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .metric {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .metric i {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      color: white;
+    }
+
+    .metric .fa-server {
+      background-color: var(--info);
+    }
+
+    .metric .fa-users {
+      background-color: var(--success);
+    }
+
+    .metric .fa-tasks {
+      background-color: var(--warning);
+    }
+
+    .metric-content h4 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .metric-content p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: var(--secondary);
+    }
+
+    /* Table Sections */
+    .table-section {
+      background: white;
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-section h3 {
+      margin-bottom: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background-color: var(--light);
+    }
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--dark);
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #edf2f9;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status {
+      padding: 0.375rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status.admitted {
+      background-color: #d1e7dd;
+      color: var(--success);
+    }
+
+    .status.pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    .status.confirmed {
+      background-color: #cfe2ff;
+      color: var(--primary);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .sidebar {
+        width: var(--sidebar-collapsed-width);
+      }
+
+      .sidebar .logo span,
+      .sidebar .menu span,
+      .sidebar .sidebar-footer {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: var(--sidebar-collapsed-width);
+      }
+
+      .cards {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-width);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar.mobile-open .logo span,
+      .sidebar.mobile-open .menu span,
+      .sidebar.mobile-open .sidebar-footer {
+        display: flex;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .topbar-left h2 {
+        font-size: 1.25rem;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+
+    /* Messages Styling */
+    .alert {
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 1rem;
+    }
+
+    .alert-success {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .topbar,
+    body.dark-mode .card,
+    body.dark-mode .table-section {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .card-header,
+    body.dark-mode .table-section h3,
+    body.dark-mode .stat-card-content h3,
+    body.dark-mode .feature-card h3 {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .stat-card-content p,
+    body.dark-mode .metric-content p {
+      color: #a0a0a0;
+    }
+
+    body.dark-mode th,
+    body.dark-mode td {
+      border-color: #333;
+    }
+
+    body.dark-mode thead {
+      background-color: #252525;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <i class="fas fa-hospital"></i>
+    <span><a href="{% url 'user_home' %}" style="color: white; text-decoration: none;">MediShare</a></span>
+  </div>
+  <ul class="menu">
+    <li class="active">
+      <a href="{% url 'hospitaldash' %}"><i class="fas fa-home"></i><span>Dashboard</span></a>
+    </li>
+    <li>
+      <a href="{% url 'hospital_management' %}"><i class="fas fa-tasks"></i><span>Management</span></a>
+    </li>
+    <li>
+      <a href="{% url 'hospital_patient_records' %}"><i class="fas fa-procedures"></i><span>Patient Records</span></a>
+    </li>
+    <li>
+      <a href="#"><i class="fas fa-calendar"></i><span>Appointments</span></a>
+    </li>
+    <li>
+      <a href="{% url 'hospitalprofile' %}"><i class="fas fa-cogs"></i><span>Settings</span></a>
+    </li>
+  </ul>
+  <div class="sidebar-footer">© 2025 MediShare</div>
+</aside>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="toggle-btn" id="mobileToggle"><i class="fas fa-bars"></i></button>
+        <h2>Dashboard</h2>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">
+          <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <div class="user">
+          <span><a href="{% url 'hospitalprofile' %}">👤 Hi, {{ request.session.u_name }}</a></span>
+          {% if hospital.image %}
+          <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}">
+          {% else %}
+          <img src="https://i.pravatar.cc/100" alt="Hospital">
+          {% endif %}
+        </div>
+        <a href="{% url 'userlogout' %}" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="content-area">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Content Area -->
+    <div class="content-area">
+      <!-- Cards -->
+      <div class="cards">
+        <div class="card stat-card">
+          <i class="fas fa-user-md"></i>
+          <div class="stat-card-content">
+            <h3 id="statDoctors">{{ total_doctors }}</h3>
+            <p>Doctors</p>
+          </div>
+        </div>
+        <div class="card stat-card">
+          <i class="fas fa-procedures"></i>
+          <div class="stat-card-content">
+            <h3 id="statPatients">{{ total_appointments }}</h3>
+            <p>Total Appointments</p>
+          </div>
+        </div>
+        <div class="card stat-card">
+          <i class="fas fa-users"></i>
+          <div class="stat-card-content">
+            <h3 id="statUsers">{{ upcoming_appointments }}</h3>
+            <p>Upcoming</p>
+          </div>
+        </div>
+        <div class="card stat-card">
+          <i class="fas fa-star"></i>
+          <div class="stat-card-content">
+            <h3 id="statAppointments">4.8</h3>
+            <p>Hospital Rating</p>
+          </div>
+        </div>
+        <div class="card feature-card quick-actions">
+          <h3>Quick Actions</h3>
+          <div class="action-buttons">
+            <button class="btn-primary" onclick="redirectToManagement('doctor-management')">
+              <i class="fas fa-user-md"></i> Add Doctor
+            </button>
+            <button class="btn-primary" onclick="redirectToPatientRecords()">
+              <i class="fas fa-procedures"></i> Patient Records
+            </button>
+            <button class="btn-primary" onclick="redirectToManagement('department-management')">
+              <i class="fas fa-building"></i> Add Department
+            </button>
+            <button class="btn-primary" onclick="redirectToManagement('service-management')">
+              <i class="fas fa-hand-holding-medical"></i> Add Service
+            </button>
+          </div>
+        </div>
+        <div class="card feature-card activity-log">
+          <h3>Recent Activity</h3>
+          <ul id="activityLog">
+            {% if recent_appointments %}
+              {% for appointment in recent_appointments %}
+              <li>
+                <i class="fas fa-calendar-check"></i>
+                <div class="activity-content">
+                  <p>New appointment with {{ appointment.user.fullname }}</p>
+                  <span class="activity-time">{{ appointment.date }}</span>
+                </div>
+              </li>
+              {% endfor %}
+            {% else %}
+              <li>
+                <i class="fas fa-info-circle"></i>
+                <div class="activity-content">
+                  <p>No recent activity</p>
+                  <span class="activity-time">Just now</span>
+                </div>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+        <div class="card feature-card system-status">
+          <h3>System Status</h3>
+          <div class="status-metrics">
+            <div class="metric">
+              <i class="fas fa-server"></i>
+              <div class="metric-content">
+                <h4>99.9%</h4>
+                <p>Server Uptime</p>
+              </div>
+            </div>
+            <div class="metric">
+              <i class="fas fa-users"></i>
+              <div class="metric-content">
+                <h4 id="activeUsers">{{ total_doctors }}</h4>
+                <p>Active Doctors</p>
+              </div>
+            </div>
+            <div class="metric">
+              <i class="fas fa-tasks"></i>
+              <div class="metric-content">
+                <h4 id="pendingTasks">{{ upcoming_appointments }}</h4>
+                <p>Pending Appointments</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Appointments Table -->
+      <div class="table-section">
+        <h3>Recent Appointments</h3>
+        {% if recent_appointments %}
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appointment in recent_appointments %}
+            <tr>
+              <td>A{{ appointment.id|stringformat:"03d" }}</td>
+              <td>{{ appointment.user.fullname }}</td>
+              <td>Dr. {{ appointment.doctor.name }}</td>
+              <td>{{ appointment.date|date:"Y-m-d" }}</td>
+              <td>{{ appointment.time|time:"H:i" }}</td>
+              <td><span class="status {% if appointment.status == 'booked' %}confirmed{% else %}pending{% endif %}">{{ appointment.status|title }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No appointments found yet.</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Recent Doctors Table -->
+      <div class="table-section">
+        <h3>Hospital Doctors</h3>
+        {% if recent_doctors %}
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Specialization</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for doctor in recent_doctors %}
+            <tr>
+              <td>Dr. {{ doctor.name }}</td>
+              <td>{{ doctor.specialization }}</td>
+              <td>{{ doctor.email }}</td>
+              <td>{{ doctor.phone }}</td>
+              <td><span class="status confirmed">Active</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+          <p class="text-muted">No doctors added yet.</p>
+          <button class="btn-primary" onclick="redirectToManagement('doctor-management')">
+            Add First Doctor
+          </button>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JavaScript -->
+  <script>
+    // Sidebar functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const sidebar = document.getElementById('sidebar');
+      const mobileToggle = document.getElementById('mobileToggle');
+      const mainContent = document.querySelector('.main-content');
+      
+      // Mobile toggle functionality
+      mobileToggle.addEventListener('click', function() {
+        if (window.innerWidth < 768) {
+          sidebar.classList.toggle('mobile-open');
+        } else {
+          sidebar.classList.toggle('collapsed');
+          mainContent.classList.toggle('collapsed');
+        }
+      });
+
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      
+      themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+          themeIcon.classList.remove('fa-moon');
+          themeIcon.classList.add('fa-sun');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          themeIcon.classList.remove('fa-sun');
+          themeIcon.classList.add('fa-moon');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+
+      // Load saved theme
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      }
+
+      // Close sidebar when clicking on mobile
+      document.addEventListener('click', function(event) {
+        if (window.innerWidth < 768 && 
+            !sidebar.contains(event.target) && 
+            !mobileToggle.contains(event.target) &&
+            sidebar.classList.contains('mobile-open')) {
+          sidebar.classList.remove('mobile-open');
+        }
+      });
+
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+          sidebar.classList.remove('mobile-open');
+        }
+      });
+
+      console.log('Dashboard JavaScript loaded successfully');
+    });
+
+    // Quick Actions Functions
+    function redirectToManagement(tab) {
+      window.location.href = "{% url 'hospital_management' %}?tab=" + tab;
+    }
+
+    function redirectToPatientRecords() {
+      window.location.href = "{% url 'hospital_patient_records' %}";
+    }
+
+    function redirectToProfile() {
+      window.location.href = "{% url 'hospitalprofile' %}";
+    }
+
+    // Auto-update stats (simulated)
+    function updateStats() {
+      // In a real application, you would fetch this from an API
+      console.log('Updating dashboard stats...');
+    }
+
+    // Update stats every 30 seconds
+    setInterval(updateStats, 30000);
+  </script>
+</body>
+</html>

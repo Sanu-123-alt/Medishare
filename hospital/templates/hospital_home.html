@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ hospital.name }} | MediShare</title>
+  <link rel="stylesheet" href="{% static 'hospital_home.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="logo"><i class="fa-solid fa-hospital"></i> MediShare</div>
+    <nav>
+      <ul>
+        <li><a href="#hero">Home</a></li>
+        <li><a href="#services">Highlights</a></li>
+        <li><a href="#doctors">Doctors</a></li>
+        <li><a href="#patients">Patients</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="{% url 'hospitaldash' %}">Dashboard</a></li>
+        <li><a href="{% url 'userlogout' %}" class="logout">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero">
+    <div class="hero-content">
+      <h1>Welcome to {{ hospital.name }}</h1>
+      <p>Providing trusted healthcare services at <strong>{{ hospital.location }}</strong></p>
+      <div class="buttons">
+        <a href="#services" class="btn">Our Highlights</a>
+        <a href="{% url 'hospitaldash' %}" class="btn btn-outline">Go to Dashboard</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cards Section -->
+  <section id="services">
+    <h2 class="section-title">Our Highlights</h2>
+    <div class="cards">
+      <div class="card"><i class="fa-solid fa-user-doctor"></i><h3>Doctors</h3><p>{{ total_doctors }}+</p></div>
+      <div class="card"><i class="fa-solid fa-bed-pulse"></i><h3>Total Appointments</h3><p>{{ total_appointments }}+</p></div>
+      <div class="card"><i class="fa-solid fa-calendar-check"></i><h3>Upcoming</h3><p>{{ upcoming_appointments }} Today</p></div>
+      <div class="card"><i class="fa-solid fa-star"></i><h3>Rating</h3><p>4.8 / 5</p></div>
+    </div>
+  </section>
+
+  <!-- Doctors Section -->
+  <section id="doctors">
+    <h2 class="section-title">Our Doctors</h2>
+    <div class="profile-cards">
+      {% for doctor in recent_doctors %}
+      <div class="profile-card">
+        {% if doctor.image %}
+          <img src="{{ doctor.image.url }}" alt="{{ doctor.name }}">
+        {% else %}
+          <img src="https://i.pravatar.cc/150?img={{ doctor.id|add:10 }}" alt="{{ doctor.name }}">
+        {% endif %}
+        <h3>Dr. {{ doctor.name }}</h3>
+        <p>{{ doctor.specialization }}</p>
+      </div>
+      {% empty %}
+      <div class="profile-card">
+        <img src="https://i.pravatar.cc/150?img=11" alt="Doctor">
+        <h3>No Doctors Yet</h3>
+        <p>Register doctors to see them here</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Patients Section -->
+  <section id="patients">
+    <h2 class="section-title">Recent Patients</h2>
+    <div class="profile-cards">
+      <div class="profile-card">
+        <img src="https://i.pravatar.cc/150?img=21" alt="Patient">
+        <h3>John Doe</h3>
+        <p>Diabetes</p>
+      </div>
+      <div class="profile-card">
+        <img src="https://i.pravatar.cc/150?img=22" alt="Patient">
+        <h3>Mary Jane</h3>
+        <p>Asthma</p>
+      </div>
+      <div class="profile-card">
+        <img src="https://i.pravatar.cc/150?img=23" alt="Patient">
+        <h3>James Brown</h3>
+        <p>Fever</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <h2 class="section-title">About {{ hospital.name }}</h2>
+    <div class="about-content">
+      <p><i class="fa-solid fa-phone"></i> {{ hospital.phone }}</p>
+      <p><i class="fa-solid fa-envelope"></i> {{ hospital.email }}</p>
+      <p><i class="fa-solid fa-location-dot"></i> {{ hospital.location }}</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <p>&copy; 2025 MediShare | All Rights Reserved</p>
+      <div class="socials">
+        <a href="#"><i class="fa-brands fa-facebook"></i></a>
+        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+        <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

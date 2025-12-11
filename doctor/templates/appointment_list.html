@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Appointment List</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'appointment_list.css' %}">
+</head>
+<body>
+  <div class="list-wrapper">
+    <div class="list-container">
+      <div class="header">
+        <h1>Available Appointments</h1>
+        <p>Book an appointment with your doctor</p>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+      <div class="slots-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Doctor</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Duration</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for slot in slots %}
+              <tr>
+                <td>{{ slot.doctor.name }}</td>
+                <td>{{ slot.date }}</td>
+                <td>{{ slot.time }}</td>
+                <td>{{ slot.duration }} min</td>
+                <td>{{ slot.status|capfirst }}</td>
+                <td>
+                  {% if slot.status == 'available' %}
+                    <form method="post" action="">
+                      {% csrf_token %}
+                      <button type="submit" class="btn" onclick="logButtonClick('Book Slot {{ slot.id }}')">Book</button>
+                      <a href="{% url 'appointment_delete' slot.id %}" class="btn" onclick="logFormSubmit()">Delete Slot</a>
+                    </form>
+                  {% else %}
+                    <span class="booked">Booked</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="6">No appointment slots available</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{% url 'doctor_dashboard' %}" class="back-btn">Back to Dashboard</a>
+    </div>
+  </div>
+  <script src="{% static 'appointment_list.js' %}"></script>
+</body>
+</html>

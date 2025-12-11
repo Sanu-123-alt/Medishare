@@ -1,0 +1,41 @@
+{% if qr_code %}
+<div class="mb-4">
+    <img src="data:image/png;base64,{{ qr_code }}" 
+         alt="Emergency Access QR Code" 
+         class="img-fluid shadow-sm border rounded" 
+         style="max-width: 300px;">
+</div>
+<div class="mb-3">
+    <h5><i class="fas fa-key"></i> Access Code:</h5>
+    <p class="lead font-monospace">{{ access_code }}</p>
+</div>
+<div class="mb-3">
+    <h5><i class="fas fa-clock"></i> Expires At:</h5>
+    <p>{{ expires_at }}</p>
+</div>
+{% if access_url %}
+<div class="mb-3">
+    <h5><i class="fas fa-link"></i> Access URL:</h5>
+    <p class="text-break small">
+        <a href="{{ access_url }}" target="_blank">{{ access_url }}</a>
+    </p>
+</div>
+{% endif %}
+<div class="mt-3">
+    <button class="btn btn-primary" onclick="refreshQRCode()">
+        <i class="fas fa-sync"></i> Refresh QR Code
+    </button>
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle"></i> 
+    {% if error %}
+        {{ error }}
+    {% else %}
+        No QR code available.
+    {% endif %}
+    <button class="btn btn-warning btn-sm ms-2" onclick="refreshQRCode()">
+        <i class="fas fa-sync"></i> Refresh
+    </button>
+</div>
+{% endif %}

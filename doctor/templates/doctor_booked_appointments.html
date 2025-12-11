@@ -1,0 +1,156 @@
+{% extends "doctor_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="p-8">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-8">
+        <div class="flex-1">
+            <div class="max-w-xl">
+                <label class="flex flex-col min-w-40 h-12 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                        <div class="text-gray-500 dark:text-gray-400 flex border-none bg-white dark:bg-gray-900 items-center justify-center pl-4 rounded-l-lg border-r-0">
+                            <span class="material-symbols-outlined">search</span>
+                        </div>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-white dark:bg-gray-900 focus:border-none h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" 
+                               placeholder="Search appointments..." 
+                               value=""/>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white relative">
+                <span class="material-symbols-outlined">notifications</span>
+                {% if appointments %}
+                <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-orange-500 ring-2 ring-background-light dark:ring-background-dark"></span>
+                {% endif %}
+            </button>
+            <a href="{% url 'doctor_port' %}" class="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white">
+                <span class="material-symbols-outlined">settings</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Page Heading -->
+    <div class="flex flex-wrap justify-between gap-3 mb-8">
+        <div class="flex min-w-72 flex-col gap-3">
+            <p class="text-[#111618] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                Appointments
+            </p>
+            <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">
+                Manage your scheduled appointments and patient consultations
+            </p>
+        </div>
+        <a href="{% url 'appointment_create' %}" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
+            <span class="truncate">Create New Slot</span>
+        </a>
+    </div>
+
+    <!-- Appointments Stats -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div class="flex flex-1 flex-col gap-2 rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900">
+            <p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Total Appointments</p>
+            <p class="text-[#111618] dark:text-white tracking-light text-[32px] font-bold leading-tight truncate">{{ appointments|length }}</p>
+            <div class="flex gap-1">
+                <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">All time</p>
+            </div>
+        </div>
+        <div class="flex flex-1 flex-col gap-2 rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900">
+            <p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Booked</p>
+            <p class="text-[#111618] dark:text-white tracking-light text-[32px] font-bold leading-tight truncate">
+                {{ booked_count }}
+            </p>
+            <div class="flex gap-1">
+                <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Active appointments</p>
+            </div>
+        </div>
+        <div class="flex flex-1 flex-col gap-2 rounded-xl border border-gray-200 dark:border-gray-700 p-6 bg-white dark:bg-gray-900">
+            <p class="text-[#111618] dark:text-white text-base font-medium leading-normal">Cancelled</p>
+            <p class="text-[#111618] dark:text-white tracking-light text-[32px] font-bold leading-tight truncate">
+                {{ cancelled_count }}
+            </p>
+            <div class="flex gap-1">
+                <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Cancelled appointments</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointments Grid -->
+    {% if appointments %}
+    <div class="grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
+        {% for app in appointments %}
+        <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 transition-all duration-300 hover:shadow-lg hover:border-primary/30">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary rounded-full size-12 flex items-center justify-center text-white text-lg font-bold">
+                        {{ app.user.fullname|first }}
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-[#111618] dark:text-white">{{ app.user.fullname }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ app.user.email }}</p>
+                    </div>
+                </div>
+                <span class="px-3 py-1 rounded-full text-xs font-medium 
+                    {% if app.status == 'booked' %}bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300
+                    {% else %}bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300{% endif %}">
+                    {{ app.status|title }}
+                </span>
+            </div>
+            
+            <div class="space-y-3 mb-4">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-gray-500 dark:text-gray-400 text-sm">calendar_today</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ app.date }}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-gray-500 dark:text-gray-400 text-sm">schedule</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ app.time }}</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-gray-500 dark:text-gray-400 text-sm">phone</span>
+                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ app.user.phone|default:"Not provided" }}</span>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Reason for visit:</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-3">{{ app.reason }}</p>
+            </div>
+            
+            {% if app.status == "booked" %}
+            <div class="flex gap-2">
+                <a href="{% url 'doctor_cancel_appointment' app.id %}" 
+                   class="flex-1 text-center px-4 py-2 bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/30 transition-colors text-sm font-medium"
+                   onclick="return confirm('Are you sure you want to cancel this appointment?');">
+                    Cancel Appointment
+                </a>
+                <button class="flex-1 text-center px-4 py-2 bg-primary/10 dark:bg-primary/20 text-primary rounded-lg hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors text-sm font-medium">
+                    Reschedule
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
+        <span class="material-symbols-outlined text-gray-400 text-5xl mb-4">calendar_today</span>
+        <h3 class="text-lg font-medium text-[#111618] dark:text-white mb-2">No Appointments Scheduled</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-6">You don't have any appointments booked yet.</p>
+        <a href="{% url 'appointment_create' %}" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium">
+            <span class="material-symbols-outlined text-lg">add</span>
+            Create Appointment Slot
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Add any JavaScript functionality you need for the appointments page
+    document.addEventListener('DOMContentLoaded', function() {
+        // You can add filtering, sorting, or other interactive features here
+    });
+</script>
+{% endblock %}

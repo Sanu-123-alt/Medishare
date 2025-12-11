@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i> Emergency Medical Access
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-hospital-alt text-danger fa-3x mb-3"></i>
+                        <h5>Medical Professional Authentication Required</h5>
+                        <p class="text-muted small">Please log in to access patient medical information</p>
+                    </div>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" action="{% url 'emergency_auth' patient_id=patient_id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user-md me-1"></i> Professional Type
+                            </label>
+                            <select name="professional_type" class="form-select" required>
+                                <option value="">Select type...</option>
+                                <option value="doctor">Doctor</option>
+                                <option value="hospital">Hospital Staff</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user me-1"></i> Username
+                            </label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-lock me-1"></i> Password
+                            </label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-sign-in-alt me-2"></i> Authenticate
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <small class="text-danger">
+                                <i class="fas fa-info-circle me-1"></i>
+                                All access attempts will be logged and the patient will be notified
+                            </small>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

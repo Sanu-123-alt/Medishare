@@ -1,0 +1,136 @@
+{% load static %}
+
+<div class="review-section mt-4">
+    <h4>Reviews</h4>
+    
+    <!-- Review Form -->
+    {% if request.session.user_id %}
+    <div class="review-form mb-4">
+        <form hx-post="{% url 'add_review' %}" 
+              hx-swap="beforeend"
+              hx-target="#reviews-list"
+              class="card p-3">
+            {% csrf_token %}
+            
+            <input type="hidden" name="entity_type" value="{{ entity_type }}">
+            <input type="hidden" name="entity_id" value="{{ entity_id }}">
+            
+            <div class="mb-3">
+                <label class="form-label">Rating</label>
+                <div class="star-rating">
+                    {% for i in "12345" %}
+                    <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
+                    <label for="star{{ i }}" class="star">★</label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="comment" class="form-label">Your Review</label>
+                <textarea class="form-control" 
+                          id="comment" 
+                          name="comment" 
+                          rows="3" 
+                          required
+                          placeholder="Share your experience..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Please <a href="{% url 'user_login' %}">login</a> to leave a review.
+    </div>
+    {% endif %}
+    
+    <!-- Reviews List -->
+    <div id="reviews-list">
+        {% for review in reviews %}
+        <div class="review-item card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stars">
+                            {% for i in "12345" %}
+                                <span class="star {% if i|add:'0' <= review.rating %}filled{% endif %}">★</span>
+                            {% endfor %}
+                        </div>
+                        <p class="review-text mt-2">{{ review.comment }}</p>
+                    </div>
+                    <small class="text-muted">{{ review.created_at|date:"M d, Y" }}</small>
+                </div>
+                <div class="review-meta">
+                    <small class="text-muted">By {{ review.user.fullname }}</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-light">
+            No reviews yet. Be the first to leave a review!
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #ffd700;
+}
+
+.stars {
+    color: #ddd;
+    font-size: 1.2rem;
+}
+
+.stars .star.filled {
+    color: #ffd700;
+}
+
+.review-item {
+    transition: transform 0.2s;
+}
+
+.review-item:hover {
+    transform: translateX(5px);
+}
+
+.review-text {
+    color: #444;
+    line-height: 1.5;
+}
+
+.review-meta {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eee;
+}
+</style>
+
+<script>
+document.addEventListener('htmx:afterOnLoad', function(evt) {
+    if (evt.detail.elt.matches('form')) {
+        evt.detail.elt.reset();
+    }
+});
+</script>

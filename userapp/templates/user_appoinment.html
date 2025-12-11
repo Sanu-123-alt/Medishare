@@ -1,0 +1,67 @@
+{% extends "user_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">Book Appointment</h2>
+
+  <form method="POST" action="{% url 'book_appointment' %}">
+    {% csrf_token %}
+
+    <!-- Doctor selection -->
+    <div class="mb-3">
+      <label for="doctor" class="form-label">Select Doctor</label>
+      <select name="doctor" id="doctor" class="form-select" required>
+        <option value="">-- Select Doctor --</option>
+        {% for doc in doctors %}
+          <option value="{{ doc.id }}">{{ doc.name }} ({{ doc.specialization }})</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Slot selection -->
+    <div class="mb-3">
+      <label for="slot" class="form-label">Select Available Slot</label>
+      <select name="slot" id="slot" class="form-select" required>
+        <option value="">-- Select Slot --</option>
+        {% for doc in doctors %}
+          {% for slot in doc.appointmentslot_set.all %}
+            {% if slot.status == "available" %}
+              <option value="{{ slot.id }}" data-doctor="{{ doc.id }}">
+                {{ slot.date }} at {{ slot.time }} ({{ slot.duration }} min)
+              </option>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Reason -->
+    <div class="mb-3">
+      <label for="reason" class="form-label">Reason for Appointment</label>
+      <textarea name="reason" id="reason" class="form-control" rows="3" placeholder="Enter reason..." required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Book Appointment</button>
+  </form>
+</div>
+
+<!-- JS to filter slots by doctor -->
+<script>
+  document.getElementById("doctor").addEventListener("change", function() {
+    let selectedDoctor = this.value;
+    let slotOptions = document.querySelectorAll("#slot option");
+
+    slotOptions.forEach(option => {
+      if (option.value === "") return; // skip placeholder
+      if (option.dataset.doctor === selectedDoctor) {
+        option.style.display = "block";
+      } else {
+        option.style.display = "none";
+      }
+    });
+
+    document.getElementById("slot").value = ""; // reset slot
+  });
+</script>
+{% endblock %}

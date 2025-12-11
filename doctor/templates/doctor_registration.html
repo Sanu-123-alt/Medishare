@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #2193b0, #6dd5ed);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .doctor-wrapper {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .doctor-card {
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(33, 147, 176, 0.2);
+      padding: 35px;
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .doctor-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .card-header h1 {
+      font-size: 28px;
+      color: #2193b0;
+      margin-bottom: 12px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .card-header p {
+      font-size: 16px;
+      color: #455a64;
+      font-weight: 500;
+    }
+
+    .card-body {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
+      font-size: 15px;
+      color: #37474f;
+      background: #ffffff;
+      transition: all 0.3s ease;
+      resize: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: #2193b0;
+      box-shadow: 0 0 0 4px rgba(33, 147, 176, 0.1);
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: #78909c;
+      padding: 0 5px;
+      background: #ffffff;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label,
+    .form-group select:focus + label,
+    .form-group select:not([value=""]) + label,
+    .form-group textarea:focus + label,
+    .form-group textarea:not(:placeholder-shown) + label {
+      top: 0;
+      transform: translateY(-50%) scale(0.9);
+      color: #2193b0;
+      font-weight: 500;
+    }
+
+    .image-upload {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .preview-box {
+      width: 120px;
+      height: 120px;
+      border: 3px dashed #e3f2fd;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .preview-box:hover {
+      border-color: #2193b0;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    input[type="file"] {
+      font-size: 14px;
+      color: #455a64;
+      width: 100%;
+      max-width: 250px;
+    }
+
+    .card-footer {
+      text-align: center;
+      margin-top: 30px;
+      grid-column: span 2;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #2193b0, #6dd5ed);
+      color: #ffffff;
+      padding: 14px 80px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(33, 147, 176, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(33, 147, 176, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+      .doctor-card {
+        padding: 25px;
+      }
+
+      .btn {
+        padding: 14px 50px;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="doctor-wrapper">
+    <div class="doctor-card">
+      <!-- Header -->
+      <div class="card-header">
+        <h1>Doctor Registration</h1>
+        <p>Join your hospital network by filling the form below</p>
+      </div>
+
+      <!-- Body -->
+      <form class="card-body" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Left Column -->
+        <div class="form-left">
+          <div class="form-group">
+            <input type="text" name="name" placeholder=" " required>
+            <label>Full Name</label>
+          </div>
+
+          <div class="form-group">
+            <input type="email" name="email" placeholder=" " required>
+            <label>Email</label>
+          </div>
+
+          <div class="form-group">
+            <input type="text" name="phone" placeholder=" " required>
+            <label>Phone Number</label>
+          </div>
+
+          <div class="form-group">
+            <input type="password" name="password" placeholder=" " required>
+            <label>Password</label>
+          </div>
+
+          <div class="form-group">
+            <input type="text" name="specialization" placeholder=" " required>
+            <label>Specialization</label>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="form-right">
+          <div class="form-group">
+            <select name="hospital" required>
+              <option value="" disabled selected>Select Hospital</option>
+              {% for hospital in hospitals %}
+                <option value="{{ hospital.id }}">{{ hospital.name }}</option>
+              {% endfor %}
+            </select>
+            <label>Hospital</label>
+          </div>
+
+          <div class="form-group">
+            <textarea name="bio" rows="3" placeholder=" " required></textarea>
+            <label>Short Bio</label>
+          </div>
+
+          <div class="form-group">
+            <input type="text" name="qualifications" placeholder=" " required>
+            <label>Qualifications (comma separated)</label>
+          </div>
+
+          <div class="form-group">
+            <input type="text" name="experience" placeholder=" " required>
+            <label>Experience (comma separated)</label>
+          </div>
+
+          <div class="form-group">
+            <input type="url" name="twitter" placeholder=" ">
+            <label>Twitter</label>
+          </div>
+
+          <div class="form-group">
+            <input type="url" name="portfolio" placeholder=" ">
+            <label>PortFolio URL</label>
+          </div>
+
+          <div class="form-group">
+            <input type="url" name="linkedin" placeholder=" ">
+            <label>LinkedIn URL</label>
+          </div>
+
+          <div class="form-group image-upload">
+            <div class="preview-box" id="previewBox">
+              <img id="previewImage" src="#" alt="Preview" style="display:none;">
+            </div>
+            <input type="file" name="image" id="doctorImage" accept="image/*">
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer">
+          <button type="submit" class="btn">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('doctorImage').addEventListener('change', function(event) {
+      const previewImage = document.getElementById('previewImage');
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImage.src = e.target.result;
+          previewImage.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewImage.style.display = 'none';
+        previewImage.src = '#';
+      }
+    });
+  </script>
+</body>
+</html>

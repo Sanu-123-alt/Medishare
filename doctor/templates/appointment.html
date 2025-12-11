@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Appointment Slots</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'appointment_slots.css' %}">
+</head>
+<body>
+  <div class="slots-wrapper">
+    <div class="slots-container">
+      <div class="header">
+        <h1>Manage Appointment Slots</h1>
+        <p>Add, view, or delete your available appointment slots</p>
+      </div>
+      <div class="form-section">
+        <h2>Add New Slot</h2>
+        <form id="slot-form" method="post" action="{% url 'appointment_create' %}">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="slot-date">Date</label>
+            <input type="date" id="slot-date" name="date" required>
+          </div>
+          <div class="form-group">
+            <label for="slot-time">Time</label>
+            <input type="time" id="slot-time" name="time" required>
+          </div>
+          <div class="form-group">
+            <label for="slot-duration">Duration (minutes)</label>
+            <input type="number" id="slot-duration" name="duration" min="15" max="120" required>
+          </div>
+          <div class="form-group">
+            <label for="slot-status">Status</label>
+            <select id="slot-status" name="status">
+              <option value="available">Available</option>
+              <option value="booked">Booked</option>
+            </select>
+          </div>
+          <button type="submit" class="btn" onclick="logFormSubmit()">Add Slot</button>
+          
+        </form>
+        <a href="{% url 'appointment_list'%}" class="btn" onclick="logFormSubmit()">View Slot</a>
+      </div>
+      <div class="slots-table">
+        <h2>Available Slots</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Duration</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for slot in slots %}
+              <tr>
+                <td>{{ slot.date }}</td>
+                <td>{{ slot.time }}</td>
+                <td>{{ slot.duration }} min</td>
+                <td>{{ slot.status|capfirst }}</td>
+                <td>
+                  <a href="{% url 'appointment_delete' slot.id %}" class="delete-btn" onclick="logButtonClick('Delete Slot {{ slot.id }}')">Delete</a>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5">No slots available</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{% url 'doctor_dashboard' %}" class="back-btn">Back to Dashboard</a>
+    </div>
+  </div>
+  <script src="{% static 'appointment_slots.js' %}"></script>
+</body>
+</html>

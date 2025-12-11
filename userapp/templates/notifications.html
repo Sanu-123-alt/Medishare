@@ -1,0 +1,239 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | MediShare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Root Colors matching registration form */
+:root {
+    --primary-bg: #f8f9fa;
+    --secondary-bg: #e9ecef;
+    --accent-blue: #007bff;
+    --accent-purple: #6f42c1;
+    --accent-green: #28a745;
+    --text-color: #212529;
+    --navbar-bg: #e7f1ff;
+}
+
+/* Reset */
+body, html { margin:0; padding:0; font-family:'Poppins',sans-serif; background: var(--primary-bg); color: var(--text-color); }
+a { text-decoration:none; }
+
+/* Navbar */
+.navbar {
+    background: var(--navbar-bg) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding:20px 30px;
+}
+.navbar-brand { font-weight:700; color: var(--text-color) !important; font-size:24px; }
+.navbar .user-info { margin-left:auto; display:flex; align-items:center; gap:15px; font-weight:500; }
+.navbar .user-info .btn { padding:6px 14px; font-size:14px; }
+
+/* Dashboard Layout */
+.dashboard-container { display:flex; min-height:100vh; }
+
+/* Sidebar */
+.sidebar {
+    width:260px; background: var(--secondary-bg); color:#495057; padding-top:25px; transition:all 0.3s;
+    border-right:1px solid #dee2e6; box-shadow:2px 0 6px rgba(0,0,0,0.05);
+}
+.sidebar a {
+    display:flex; align-items:center; padding:14px 22px; color:#495057; font-weight:500; border-left:4px solid transparent;
+    border-radius:6px; margin:6px 10px; transition:all 0.3s;
+}
+.sidebar a:hover { 
+    background:#ffffff; 
+    color: var(--accent-blue); 
+    border-left:4px solid var(--accent-blue); 
+    padding-left:28px; 
+    box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+.sidebar a.active { 
+    background:#ffffff; 
+    color: var(--accent-blue); 
+    border-left:4px solid var(--accent-blue); 
+    padding-left:28px; 
+}
+
+/* Main Content */
+.main { flex:1; padding:30px; overflow-y:auto; }
+
+/* Notifications */
+.notification {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    transition: all 0.3s ease;
+}
+
+.notification:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.notification.unread {
+    background-color: #f0f8ff;
+    border-left: 4px solid #0d6efd;
+}
+
+.notification-time {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.notification-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.notification-message {
+    color: #444;
+}
+
+.unread-badge {
+    background-color: #dc3545;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+.mark-read-btn {
+    padding: 2px 8px;
+    font-size: 0.8em;
+    color: #0d6efd;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.mark-read-btn:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+.footer { text-align:center; margin-top:40px; font-size:14px; color:#6c757d; }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="{% url 'home' %}">MediShare</a>
+    <div class="user-info">
+        <span>Welcome, <strong>{{ request.session.user_name }}</strong></span>
+        {% if unread_notifications %}
+            <span class="badge bg-danger me-2">{{ unread_notifications }}</span>
+        {% endif %}
+        <a href="{% url 'user_logout' %}" class="btn btn-primary btn-sm">Logout</a>
+    </div>
+</nav>
+
+
+<div class="dashboard-container">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="{% url 'user_dashboard' %}"><i class="fas fa-home me-2"></i> Dashboard</a>
+        <a href="{% url 'upload_record' %}"><i class="fas fa-upload me-2"></i> Upload Data</a>
+        <a href="{% url 'view_records' %}"><i class="fas fa-file-medical me-2"></i> My Records</a>
+        <a href="{% url 'user_appoinment' %}"><i class="fas fa-calendar-check me-2"></i> Appointments</a>
+        <a href="{% url 'my_appointments' %}"><i class="fas fa-calendar-check me-2"></i>My Appointments</a>
+                <a href="{% url 'user_notifications' %}" class="active">
+            <i class="fas fa-bell me-2"></i> Notifications 
+            {% if unread_count %}
+                <span class="badge bg-danger">{{ unread_count }}</span>
+            {% endif %}
+        </a>
+        <a href="#"><i class="fas fa-user-md me-2"></i> Doctors</a>
+        <a href="#"><i class="fas fa-cog me-2"></i> Settings</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Notifications 
+                        {% if unread_count %}
+                            <span class="unread-badge">{{ unread_count }} New</span>
+                        {% endif %}
+                    </h2>
+                </div>
+
+                {% if notifications %}
+                    {% for notification in notifications %}
+                        {% include "notification_item.html" with notification=notification %}
+                    {% endfor %}
+                {% else %}
+                    <div class="alert alert-info">
+                        No notifications yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+                <div class="footer">&copy; 2025 MediShare. All Rights Reserved.</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="{% static 'js/notifications.js' %}"></script>
+    <script>
+/* CSRF helper */
+function getCookie(name) {
+  const match = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return match ? match.pop() : '';
+}
+
+/* Tell HTMX to include CSRF header */
+document.body.addEventListener('htmx:configRequest', function(evt) {
+  const token = getCookie('csrftoken');
+  if (token) {
+    evt.detail.headers['X-CSRFToken'] = token;
+  }
+});
+
+/* Update unread badges after HTMX response that includes HX-Trigger */
+document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+  try {
+    const hxTrigger = evt.detail.xhr.getResponseHeader('HX-Trigger');
+    if (!hxTrigger) return;
+    const payload = JSON.parse(hxTrigger);
+    if (payload.unreadCount !== undefined) {
+      const unread = payload.unreadCount;
+      // header badge
+      const headerBadge = document.querySelector('.navbar .badge');
+      if (headerBadge) {
+        if (unread > 0) { headerBadge.style.display = ''; headerBadge.textContent = unread; }
+        else { headerBadge.style.display = 'none'; }
+      }
+      // sidebar badge (if any)
+      const sidebarBadge = document.querySelector('.sidebar .badge');
+      if (sidebarBadge) {
+        if (unread > 0) { sidebarBadge.style.display = ''; sidebarBadge.textContent = unread; }
+        else { sidebarBadge.style.display = 'none'; }
+      }
+      // main unread badge
+      const mainBadge = document.querySelector('.unread-badge');
+      if (mainBadge) {
+        if (unread > 0) { mainBadge.style.display = ''; mainBadge.textContent = unread + ' New'; }
+        else { mainBadge.style.display = 'none'; }
+      }
+    }
+  } catch (e) {
+    console.error("HTMX afterOnLoad handler error:", e);
+  }
+});
+</script>
+
+</body>
+</html>
+

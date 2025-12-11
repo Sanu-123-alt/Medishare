@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #2193b0, #6dd5ed);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .doctor-wrapper {
+      width: 100%;
+      max-width: 1000px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .doctor-card {
+      background: rgba(255, 255, 255, 0.97);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(33, 147, 176, 0.2);
+      padding: 35px;
+      transition: all 0.3s ease;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .doctor-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .card-header h1 {
+      font-size: 28px;
+      color: #2193b0;
+      margin-bottom: 12px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .card-header p {
+      font-size: 16px;
+      color: #455a64;
+      font-weight: 500;
+    }
+
+    .card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e3f2fd;
+      border-radius: 12px;
+      font-size: 15px;
+      color: #37474f;
+      background: #ffffff;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #2193b0;
+      box-shadow: 0 0 0 4px rgba(33, 147, 176, 0.1);
+    }
+
+    .form-group label {
+      position: absolute;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: #78909c;
+      padding: 0 5px;
+      background: #ffffff;
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .form-group input:focus + label,
+    .form-group input:not(:placeholder-shown) + label {
+      top: 0;
+      transform: translateY(-50%) scale(0.9);
+      color: #2193b0;
+      font-weight: 500;
+    }
+
+    .card-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-top: 30px;
+      gap: 15px;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #2193b0, #6dd5ed);
+      color: #ffffff;
+      padding: 14px 80px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(33, 147, 176, 0.2);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(33, 147, 176, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .register-link {
+      font-size: 14px;
+      color: #455a64;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+
+    .register-link:hover {
+      color: #2193b0;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .doctor-card {
+        padding: 25px;
+      }
+
+      .btn {
+        padding: 14px 50px;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="doctor-wrapper">
+    <div class="doctor-card">
+      <!-- Header -->
+      <div class="card-header">
+        <h1>Doctor Login</h1>
+        <p>Access your hospital network account</p>
+      </div>
+
+      <!-- Body -->
+      <form class="card-body" method="POST" action="{% url 'doctor_login_check' %}">
+        {% csrf_token %} 
+        <div class="form-group">
+          <input type="email" name="email" placeholder=" " required>
+          <label>Email</label>
+        </div>
+
+        <div class="form-group">
+          <input type="password" name="password" placeholder=" " required>
+          <label>Password</label>
+        </div>
+
+        <!-- Footer -->
+        <div class="card-footer">
+          <button type="submit" class="btn">Login</button>
+          <a href="{% url 'doctor_register' %}" class="register-link">Don't have an account? Register here</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

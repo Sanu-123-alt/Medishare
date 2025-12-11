@@ -1,0 +1,182 @@
+{% load static %}
+<div class="reviews-section">
+    <!-- Review Form -->
+    {% if request.session.user_id %}
+    <div class="review-form-container card mb-4 p-4">
+        <h4 class="mb-3">Write a Review</h4>
+        <form action="{% url 'add_review' %}" method="POST" class="review-form">
+            {% csrf_token %}
+            <input type="hidden" name="entity_type" value="{{ entity_type }}">
+            <input type="hidden" name="entity_id" value="{{ entity_id }}">
+            
+            <div class="rating-input mb-3">
+                <label class="form-label">Your Rating</label>
+                <div class="stars">
+                    <input type="radio" id="star5" name="rating" value="5" required/>
+                    <label for="star5" title="5 stars"><i class="fas fa-star"></i></label>
+                    
+                    <input type="radio" id="star4" name="rating" value="4"/>
+                    <label for="star4" title="4 stars"><i class="fas fa-star"></i></label>
+                    
+                    <input type="radio" id="star3" name="rating" value="3"/>
+                    <label for="star3" title="3 stars"><i class="fas fa-star"></i></label>
+                    
+                    <input type="radio" id="star2" name="rating" value="2"/>
+                    <label for="star2" title="2 stars"><i class="fas fa-star"></i></label>
+                    
+                    <input type="radio" id="star1" name="rating" value="1"/>
+                    <label for="star1" title="1 star"><i class="fas fa-star"></i></label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="comment" class="form-label">Your Review</label>
+                <textarea name="comment" id="comment" class="form-control" rows="4" 
+                    placeholder="Share your experience..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane me-2"></i>Submit Review
+            </button>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        Please <a href="{% url 'user_login' %}?next={{ request.path }}" class="alert-link">log in</a> to write a review.
+    </div>
+    {% endif %}
+
+    <!-- Reviews List -->
+    <div class="reviews-list">
+        <h4 class="mb-4">
+            <i class="fas fa-comments me-2"></i>
+            Patient Reviews
+            {% if reviews %}
+                <span class="text-muted">({{ reviews|length }})</span>
+            {% endif %}
+        </h4>
+
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card mb-4">
+                <div class="review-header d-flex justify-content-between align-items-center mb-2">
+                    <div class="reviewer-info">
+                        <h5 class="mb-0">{{ review.user.fullname }}</h5>
+                        <small class="text-muted">{{ review.created_at|date:"F j, Y" }}</small>
+                    </div>
+                    <div class="rating-display">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="fas fa-star text-warning"></i>
+                            {% else %}
+                                <i class="far fa-star text-muted"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="review-content">
+                    <p class="mb-0">{{ review.comment }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="text-center text-muted p-4">
+            <i class="fas fa-comment-slash fa-2x mb-3"></i>
+            <p>No reviews yet. Be the first to share your experience!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.reviews-section {
+    margin-top: 2rem;
+}
+
+.review-form-container {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.rating-input .stars {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 0.5rem;
+}
+
+.rating-input input[type="radio"] {
+    display: none;
+}
+
+.rating-input label {
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #ddd;
+    transition: all 0.2s ease;
+}
+
+.rating-input label:hover,
+.rating-input label:hover ~ label,
+.rating-input input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+
+.review-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease;
+}
+
+.review-card:hover {
+    transform: translateY(-2px);
+}
+
+.reviewer-info h5 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+
+.rating-display {
+    font-size: 1rem;
+}
+
+.review-content {
+    color: var(--text-light);
+    line-height: 1.6;
+}
+
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: var(--shadow);
+}
+
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+textarea.form-control {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    resize: vertical;
+}
+
+textarea.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.1);
+}
+</style>

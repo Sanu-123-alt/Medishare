@@ -1,0 +1,86 @@
+{% extends 'adminapp/base.html' %}
+
+{% block title %}Admins - MedAdmin{% endblock %}
+{% block page_title %}Admin Management{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-lg">
+    <div class="p-6 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-800">System Administrators</h2>
+            <a href="{% url 'admin_add' %}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                <i class="fas fa-plus"></i>
+                <span>Add Admin</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role & Department</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Activity</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for admin in admins %}
+                <tr class="hover:bg-gray-50 transition-colors duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-shield text-blue-500"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">{{ admin.user.username }}</div>
+                                <div class="text-sm text-gray-500">{{ admin.user.get_full_name|default:"No name" }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ admin.role }}</div>
+                        <div class="text-sm text-gray-500">{{ admin.department|default:"No department" }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ admin.user.email }}</div>
+                        <div class="text-sm text-gray-500">{{ admin.phone|default:"No phone" }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">{{ admin.last_activity|date:"M d, Y" }}</div>
+                        <div class="text-sm text-gray-500">{{ admin.last_activity|timesince }} ago</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <a href="{% url 'admin_edit' admin.id %}" class="text-blue-600 hover:text-blue-900 transition-colors duration-200 flex items-center space-x-1">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit</span>
+                            </a>
+                            {% if admin.user != request.user %}
+                            <a href="{% url 'admin_delete' admin.id %}" class="text-red-600 hover:text-red-900 transition-colors duration-200 flex items-center space-x-1">
+                                <i class="fas fa-trash"></i>
+                                <span>Delete</span>
+                            </a>
+                            {% else %}
+                            <span class="text-gray-400 flex items-center space-x-1">
+                                <i class="fas fa-trash"></i>
+                                <span>Delete</span>
+                            </span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                        No administrators found. <a href="{% url 'admin_add' %}" class="text-blue-500 hover:text-blue-700">Add the first admin</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

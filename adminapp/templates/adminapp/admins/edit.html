@@ -1,0 +1,404 @@
+{% extends 'adminapp/base.html' %}
+
+{% block title %}Edit Admin - MedAdmin{% endblock %}
+{% block page_title %}Edit Administrator: {{ admin_profile.user.username }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Account Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Account Information</h3>
+                </div>
+                
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Username *
+                    </label>
+                    <input type="text" id="username" name="username" value="{{ admin_profile.user.username }}" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter username">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email Address *
+                    </label>
+                    <input type="email" id="email" name="email" value="{{ admin_profile.user.email }}" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter email address">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2"></i>New Password
+                    </label>
+                    <input type="password" id="password" name="password" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Leave blank to keep current password">
+                    <p class="text-xs text-gray-500 mt-1">Leave empty to keep current password</p>
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-phone mr-2"></i>Phone Number
+                    </label>
+                    <input type="tel" id="phone" name="phone" value="{{ admin_profile.phone|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter phone number">
+                </div>
+
+                <!-- Personal Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Personal Information</h3>
+                </div>
+                
+                <div>
+                    <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-signature mr-2"></i>First Name
+                    </label>
+                    <input type="text" id="first_name" name="first_name" value="{{ admin_profile.user.first_name|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter first name">
+                </div>
+                
+                <div>
+                    <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-signature mr-2"></i>Last Name
+                    </label>
+                    <input type="text" id="last_name" name="last_name" value="{{ admin_profile.user.last_name|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter last name">
+                </div>
+
+                <!-- Role Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Role Information</h3>
+                </div>
+                
+                <div>
+                    <label for="department" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-building mr-2"></i>Department
+                    </label>
+                    <select id="department" name="department" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select Department</option>
+                        <option value="IT" {% if admin_profile.department == "IT" %}selected{% endif %}>Information Technology</option>
+                        <option value="HR" {% if admin_profile.department == "HR" %}selected{% endif %}>Human Resources</option>
+                        <option value="Operations" {% if admin_profile.department == "Operations" %}selected{% endif %}>Operations</option>
+                        <option value="Medical" {% if admin_profile.department == "Medical" %}selected{% endif %}>Medical Affairs</option>
+                        <option value="Finance" {% if admin_profile.department == "Finance" %}selected{% endif %}>Finance</option>
+                        <option value="Marketing" {% if admin_profile.department == "Marketing" %}selected{% endif %}>Marketing</option>
+                        <option value="Support" {% if admin_profile.department == "Support" %}selected{% endif %}>Customer Support</option>
+                        <option value="Quality" {% if admin_profile.department == "Quality" %}selected{% endif %}>Quality Assurance</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user-tie mr-2"></i>Role *
+                    </label>
+                    <select id="role" name="role" required 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="General Admin" {% if admin_profile.role == "General Admin" %}selected{% endif %}>General Administrator</option>
+                        <option value="Super Admin" {% if admin_profile.role == "Super Admin" %}selected{% endif %}>Super Administrator</option>
+                        <option value="Content Manager" {% if admin_profile.role == "Content Manager" %}selected{% endif %}>Content Manager</option>
+                        <option value="Support Staff" {% if admin_profile.role == "Support Staff" %}selected{% endif %}>Support Staff</option>
+                        <option value="Moderator" {% if admin_profile.role == "Moderator" %}selected{% endif %}>Moderator</option>
+                        <option value="Analyst" {% if admin_profile.role == "Analyst" %}selected{% endif %}>Data Analyst</option>
+                        <option value="Auditor" {% if admin_profile.role == "Auditor" %}selected{% endif %}>System Auditor</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Admin Statistics -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h4 class="font-semibold text-blue-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Administrator Statistics
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div class="text-center">
+                        <div class="text-blue-600 font-semibold text-lg">{{ admin_profile.user.adminactivity_set.count }}</div>
+                        <div class="text-blue-700">Activities Logged</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-green-600 font-semibold text-lg">{{ admin_profile.created_at|date:"M d, Y" }}</div>
+                        <div class="text-green-700">Joined Date</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-purple-600 font-semibold text-lg">{{ admin_profile.last_activity|date:"M d, Y" }}</div>
+                        <div class="text-purple-700">Last Active</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-orange-600 font-semibold text-lg">{{ admin_profile.last_activity|timesince }}</div>
+                        <div class="text-orange-700">Time Since Active</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            {% with recent_activities=admin_profile.user.adminactivity_set.all|slice:":5" %}
+            {% if recent_activities %}
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                    <i class="fas fa-history mr-2"></i>
+                    Recent Activities
+                </h4>
+                <div class="space-y-3">
+                    {% for activity in recent_activities %}
+                    <div class="flex items-start space-x-3 p-3 bg-white rounded-lg border border-gray-100">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-history text-blue-500 text-sm"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-800">{{ activity.action }}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                {{ activity.timestamp|date:"M d, Y H:i" }} 
+                                {% if activity.ip_address %}
+                                • IP: {{ activity.ip_address }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-sm text-center py-2">No recent activities</p>
+                    {% endfor %}
+                </div>
+                {% if admin_profile.user.adminactivity_set.count > 5 %}
+                <div class="text-center mt-3">
+                    <a href="{% url 'activity_list' %}?admin={{ admin_profile.user.id }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                        View all {{ admin_profile.user.adminactivity_set.count }} activities
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <!-- Role Permissions Information -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h4 class="font-semibold text-green-800 mb-3 flex items-center">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    Role Permissions
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <h5 class="font-medium text-green-700 mb-2">Current Role: {{ admin_profile.role }}</h5>
+                        <ul class="text-green-600 space-y-1">
+                            {% if admin_profile.role == "Super Admin" %}
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>Full system access</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>User management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>Admin management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>System configuration</span>
+                            </li>
+                            {% elif admin_profile.role == "General Admin" %}
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>User management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>Hospital management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>Doctor management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-times text-red-500"></i>
+                                <span>Admin management</span>
+                            </li>
+                            {% elif admin_profile.role == "Content Manager" %}
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>Content management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-check text-green-500"></i>
+                                <span>Review moderation</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-times text-red-500"></i>
+                                <span>User management</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-times text-red-500"></i>
+                                <span>System configuration</span>
+                            </li>
+                            {% else %}
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-info-circle text-blue-500"></i>
+                                <span>Limited system access</span>
+                            </li>
+                            <li class="flex items-center space-x-2">
+                                <i class="fas fa-info-circle text-blue-500"></i>
+                                <span>Role-specific permissions</span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-medium text-green-700 mb-2">Quick Role Guide</h5>
+                        <ul class="text-green-600 space-y-1 text-xs">
+                            <li><strong>Super Admin:</strong> Full system control</li>
+                            <li><strong>General Admin:</strong> Manage users & content</li>
+                            <li><strong>Content Manager:</strong> Moderate content only</li>
+                            <li><strong>Support Staff:</strong> Basic support tasks</li>
+                            <li><strong>Moderator:</strong> Review and feedback moderation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Self-Edit Warning -->
+            {% if admin_profile.user == request.user %}
+            <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-4">
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
+                    <div>
+                        <h4 class="font-semibold text-yellow-800">Editing Your Own Account</h4>
+                        <p class="text-yellow-700 text-sm mt-1">
+                            You are editing your own administrator account. Changes to your role or permissions 
+                            may affect your ability to access certain system features.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <a href="{% url 'admin_list' %}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Cancel</span>
+                </a>
+                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>Update Administrator</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Role change confirmation
+        const roleSelect = document.getElementById('role');
+        const currentRole = '{{ admin_profile.role|escapejs }}';
+        
+        roleSelect.addEventListener('change', function() {
+            if (this.value !== currentRole) {
+                const roleName = this.options[this.selectedIndex].text;
+                
+                // Show confirmation for role downgrade
+                if (currentRole === 'Super Admin' && this.value !== 'Super Admin') {
+                    if (!confirm('WARNING: You are changing from Super Admin to ' + roleName + '. This may reduce system permissions. Continue?')) {
+                        this.value = currentRole;
+                        return;
+                    }
+                }
+                
+                // Show confirmation for any role change when editing self
+                {% if admin_profile.user == request.user %}
+                if (!confirm('You are changing your own role from ' + currentRole + ' to ' + roleName + '. This may affect your system access. Continue?')) {
+                    this.value = currentRole;
+                    return;
+                }
+                {% endif %}
+            }
+        });
+
+        // Password strength indicator
+        const passwordInput = document.getElementById('password');
+        const passwordStrength = document.createElement('div');
+        passwordStrength.className = 'text-xs mt-1';
+        if (passwordInput) {
+            passwordInput.parentNode.appendChild(passwordStrength);
+
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                let message = '';
+                let color = 'text-gray-500';
+
+                if (password.length > 0) {
+                    if (password.length < 6) {
+                        strength = 1;
+                        message = 'Very Weak';
+                        color = 'text-red-500';
+                    } else if (password.length < 8) {
+                        strength = 2;
+                        message = 'Weak';
+                        color = 'text-orange-500';
+                    } else if (password.length < 10) {
+                        strength = 3;
+                        message = 'Good';
+                        color = 'text-yellow-500';
+                    } else {
+                        strength = 4;
+                        message = 'Strong';
+                        color = 'text-green-500';
+                    }
+
+                    // Check for special characters and numbers
+                    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+                    if (/[0-9]/.test(password)) strength++;
+
+                    if (strength >= 6) {
+                        message = 'Very Strong';
+                        color = 'text-green-600';
+                    }
+                }
+
+                passwordStrength.textContent = message;
+                passwordStrength.className = `text-xs mt-1 font-medium ${color}`;
+            });
+        }
+
+        // Phone number formatting
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9+-\s]/g, '');
+            });
+        }
+
+        // Department and role tooltips
+        const departmentSelect = document.getElementById('department');
+        const roleTooltips = {
+            'Super Admin': 'Full system access including admin management and system configuration',
+            'General Admin': 'Manage users, hospitals, doctors, and content (no admin management)',
+            'Content Manager': 'Moderate reviews, feedback, and manage content only',
+            'Support Staff': 'Basic support tasks and user assistance',
+            'Moderator': 'Review and feedback moderation with limited system access',
+            'Analyst': 'Data analysis and reporting access only',
+            'Auditor': 'System audit and activity review access'
+        };
+
+        if (roleSelect) {
+            roleSelect.addEventListener('mouseover', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                if (roleTooltips[selectedOption.value]) {
+                    this.title = roleTooltips[selectedOption.value];
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

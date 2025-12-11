@@ -1,0 +1,522 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration | MediFutura</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    <style>
+        :root {
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #e9ecef;
+            --text-color: #212529;
+            --accent-blue: #007bff;
+            --accent-purple: #6f42c1;
+            --accent-green: #28a745;
+            --navbar-bg: #e7f1ff;
+        }
+        body {
+            background: var(--primary-bg);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+        }
+        .navbar {
+            background: var(--navbar-bg) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .navbar-brand, .nav-link {
+            color: var(--text-color) !important;
+        }
+        .navbar-brand:hover, .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+        .btn-nav {
+            background: var(--accent-blue);
+            color: #ffffff;
+        }
+        .registration-section {
+            background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+            padding: 100px 0;
+        }
+        .section-title {
+            color: var(--text-color);
+        }
+        .section-subtitle {
+            color: #495057;
+        }
+        .registration-container {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 40px;
+            border-radius: 8px;
+        }
+        .form-label {
+            color: #495057;
+        }
+        .form-control {
+            background-color: #ffffff;
+            color: var(--text-color);
+            border: 1px solid #ced4da;
+        }
+        .form-control::placeholder {
+            color: #6c757d;
+        }
+        .form-control:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            color: var(--text-color);
+        }
+        .security-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--secondary-bg);
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        .security-section h4 {
+            color: var(--accent-blue);
+            margin-bottom: 15px;
+        }
+        .btn-register {
+            background: var(--accent-blue);
+            color: #ffffff;
+            padding: 12px;
+            font-weight: 500;
+        }
+        .btn-register:hover {
+            background: #0056b3;
+        }
+        .otp-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .otp-timer {
+            font-size: 0.9em;
+            color: #dc3545;
+            font-weight: 500;
+        }
+        .otp-success {
+            color: #198754;
+            font-weight: 500;
+        }
+        .btn-otp {
+            background: var(--accent-green);
+            color: white;
+            border: none;
+        }
+        .btn-otp:hover {
+            background: #157347;
+            color: white;
+        }
+        .btn-otp:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'user_home' %}">MediShare</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user_home' %}#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user_home' %}#upload">Upload Data</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user_home' %}#appointments">Book Appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user_home' %}#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'user_home' %}#security">Security</a></li>
+                </ul>
+                <a href="{% url 'choice_login' %}" class="btn btn-nav">Login/Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Registration Section -->
+    <section class="registration-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+                    <h2 class="section-title text-center">Create Your MediShare Account</h2>
+                    <p class="section-subtitle text-center">Join our secure healthcare platform and take control of your medical data</p>
+                    <div class="registration-container">
+
+                        <!-- Django Messages -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} text-center">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- Registration Form -->
+                        <form id="registrationForm" method="POST" action="{% url 'user_register' %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="fullname" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullname" name="fullname" placeholder="Enter your full name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" pattern="[0-9]{10}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+                            </div>
+                            
+                            <!-- Email and OTP Section -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                                    <button type="button" class="btn btn-outline-primary" onclick="sendOTP()" id="sendOtpBtn">
+                                        Send OTP
+                                    </button>
+                                </div>
+                                <div class="form-text">We'll send a verification code to your email</div>
+                            </div>
+
+                            <!-- OTP Verification Section -->
+                            <div class="otp-section" id="otpSection" style="display: none;">
+                                <h5 class="text-primary mb-3">
+                                    <i class="fas fa-shield-alt me-2"></i>Email Verification
+                                </h5>
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <label for="otpInput" class="form-label">Enter OTP Code</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="otpInput" placeholder="Enter 6-digit OTP" maxlength="6" pattern="[0-9]{6}" required>
+                                            <button type="button" class="btn btn-otp" onclick="verifyOTP()" id="verifyOtpBtn">
+                                                Verify OTP
+                                            </button>
+                                        </div>
+                                        <div class="form-text">Enter the 6-digit code sent to your email</div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex flex-column h-100 justify-content-center">
+                                            <div id="otpTimer" class="otp-timer mb-2"></div>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="sendOTP()" id="resendOtpBtn" disabled>
+                                                Resend OTP
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="otpMessage" class="mt-2"></div>
+                            </div>
+                            <input type="hidden" name="otp_code" id="hiddenOtpCode">
+                            
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" required>
+                            </div>
+                            <div class="security-section">
+                                <h4>Security Key Setup</h4>
+                                <p class="text-muted small mb-3">Set up a security key for enhanced protection and two-factor authentication. This key will be used to unlock your medical data.</p>
+                                <label for="securityKey" class="form-label">Security Key (6-8 digits)</label>
+                                <input type="password" class="form-control" id="securityKey" name="securityKey" placeholder="Enter your security key" required>
+                                <p class="text-muted small mt-2">Note: Keep this key secret and store it securely. It cannot be recovered if lost.</p>
+                            </div>
+                            <button type="submit" class="btn btn-register w-100 mt-4" id="submitBtn" disabled>
+                                <i class="fas fa-user-plus me-2"></i>Complete Registration
+                            </button>
+                        </form>
+
+                        <p class="text-center mt-3 small">Already have an account? <a href="{% url 'choice_login' %}" class="text-primary">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h3 class="footer-logo">MediFutura</h3>
+                    <p class="footer-desc small">Revolutionizing healthcare through cutting-edge technology, uncompromising security, and seamless collaboration between patients, doctors, and providers worldwide.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">For Patients</h5>
+                    <div class="footer-links">
+                        <a href="#upload">Upload Medical Data</a>
+                        <a href="#appointments">Book Appointments</a>
+                        <a href="#dashboard">Medical Records</a>
+                        <a href="#features">Patient Features</a>
+                        <a href="#">Health Resources</a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">For Professionals</h5>
+                    <div class="footer-links">
+                        <a href="#">Doctor Registration</a>
+                        <a href="#">Hospital Partnership</a>
+                        <a href="#features">Provider Features</a>
+                        <a href="#">Billing Solutions</a>
+                        <a href="#">API Integration</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5 class="footer-title">Contact & Support</h5>
+                    <div class="footer-links">
+                        <a href="#"><i class="fas fa-envelope me-2"></i> support@medishare.com</a>
+                        <a href="#"><i class="fas fa-phone me-2"></i> +1 (800) 123-4567</a>
+                        <a href="#"><i class="fas fa-map-marker-alt me-2"></i> 123 Innovation Drive, San Francisco, CA</a>
+                        <a href="#"><i class="fas fa-comments me-2"></i> Live Chat Support</a>
+                        <a href="#"><i class="fas fa-headset me-2"></i> 24/7 Customer Service</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="small">&copy; 2023 MediFutura. All rights reserved.</div>
+                <div class="footer-links-inline">
+                    <a href="#" class="small">Privacy Policy</a>
+                    <a href="#" class="small">Terms of Service</a>
+                    <a href="#" class="small">Cookie Policy</a>
+                    <a href="#" class="small">HIPAA Compliance</a>
+                    <a href="#" class="small">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    
+<script>
+AOS.init();
+
+// Global variables for OTP
+let otpVerified = false;
+let otpTimer;
+let timeLeft = 600; // 10 minutes in seconds
+
+// Function to send OTP
+function sendOTP() {
+    const email = document.getElementById('email').value;
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    
+    if (!email) {
+        showOtpMessage('Please enter your email address first.', 'danger');
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        showOtpMessage('Please enter a valid email address.', 'danger');
+        return;
+    }
+
+    sendOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Sending...';
+    sendOtpBtn.disabled = true;
+    
+    fetch('{% url "send_otp" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            email: email,
+            user_type: 'user'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showOtpMessage(data.message, 'success');
+            document.getElementById('otpSection').style.display = 'block';
+            startOTPTimer();
+            document.getElementById('otpInput').disabled = false;
+            verifyOtpBtn.disabled = false;
+            document.getElementById('resendOtpBtn').disabled = true;
+        } else {
+            showOtpMessage(data.message, 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showOtpMessage('Error sending OTP. Please try again.', 'danger');
+    })
+    .finally(() => {
+        sendOtpBtn.innerHTML = 'Send OTP';
+        sendOtpBtn.disabled = false;
+    });
+}
+
+// Function to verify OTP
+function verifyOTP() {
+    const email = document.getElementById('email').value;
+    const otpCode = document.getElementById('otpInput').value;
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    
+    if (!email || !otpCode) {
+        showOtpMessage('Please enter both email and OTP code.', 'danger');
+        return;
+    }
+
+    if (otpCode.length !== 6) {
+        showOtpMessage('Please enter a valid 6-digit OTP code.', 'danger');
+        return;
+    }
+
+    verifyOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Verifying...';
+    verifyOtpBtn.disabled = true;
+
+    fetch('{% url "verify_otp" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            email: email,
+            otp_code: otpCode
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showOtpMessage(data.message, 'success');
+            otpVerified = true;
+            document.getElementById('submitBtn').disabled = false;
+            clearInterval(otpTimer);
+            document.getElementById('otpTimer').innerHTML = '<span class="otp-success"><i class="fas fa-check-circle me-1"></i>Verified</span>';
+            document.getElementById('otpInput').disabled = true;
+            verifyOtpBtn.disabled = true;
+            document.getElementById('resendOtpBtn').disabled = true;
+            // Store OTP value in hidden field for form submission
+            document.getElementById('hiddenOtpCode').value = otpCode;
+        } else {
+            showOtpMessage(data.message, 'danger');
+            otpVerified = false;
+            verifyOtpBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showOtpMessage('Error verifying OTP. Please try again.', 'danger');
+        otpVerified = false;
+        verifyOtpBtn.disabled = false;
+    })
+    .finally(() => {
+        verifyOtpBtn.innerHTML = 'Verify OTP';
+    });
+}
+
+// Function to start OTP timer
+function startOTPTimer() {
+    timeLeft = 600;
+    clearInterval(otpTimer);
+    otpTimer = setInterval(function() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById('otpTimer').innerHTML = 
+            `Expires in: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        if (timeLeft <= 0) {
+            clearInterval(otpTimer);
+            document.getElementById('otpTimer').innerHTML = 'OTP Expired';
+            document.getElementById('resendOtpBtn').disabled = false;
+            document.getElementById('otpInput').disabled = true;
+            showOtpMessage('OTP has expired. Please request a new one.', 'warning');
+        }
+        timeLeft--;
+    }, 1000);
+}
+
+// Function to show OTP messages
+function showOtpMessage(message, type) {
+    const messageDiv = document.getElementById('otpMessage');
+    messageDiv.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>`;
+    setTimeout(() => {
+        const alert = messageDiv.querySelector('.alert');
+        if (alert) alert.remove();
+    }, 5000);
+}
+
+// Client-side validation
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const securityKey = document.getElementById('securityKey').value;
+    const phone = document.getElementById('phone').value;
+
+    if (!otpVerified) {
+        e.preventDefault();
+        showOtpMessage('Please verify your email with OTP before submitting.', 'danger');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+        return;
+    }
+
+    if (password.length < 6) {
+        e.preventDefault();
+        alert('Password must be at least 6 characters long!');
+        return;
+    }
+
+    if (securityKey.length < 6 || securityKey.length > 8 || !/^\d+$/.test(securityKey)) {
+        e.preventDefault();
+        alert('Security key must be 6-8 digits!');
+        return;
+    }
+
+    if (!/^[0-9]{10}$/.test(phone)) {
+        e.preventDefault();
+        alert('Phone number must be 10 digits!');
+        return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Registering...';
+    submitBtn.disabled = true;
+});
+
+// Enable OTP button when email is valid
+document.getElementById('email').addEventListener('blur', function() {
+    const email = this.value;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    document.getElementById('sendOtpBtn').disabled = !(email && emailRegex.test(email));
+});
+
+// Initialize form state
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('sendOtpBtn').disabled = true;
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('otpInput').disabled = true;
+    document.getElementById('verifyOtpBtn').disabled = true;
+    document.getElementById('resendOtpBtn').disabled = true;
+});
+</script>

@@ -1,0 +1,838 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediShare - Patient Records</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0d6efd;
+      --primary-light: #e8f2ff;
+      --secondary: #6c757d;
+      --success: #198754;
+      --info: #0dcaf0;
+      --warning: #ffc107;
+      --danger: #dc3545;
+      --light: #f8f9fa;
+      --dark: #212529;
+      --sidebar-width: 260px;
+      --sidebar-collapsed-width: 70px;
+      --topbar-height: 70px;
+      --card-radius: 15px;
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fb;
+      color: #344767;
+      overflow-x: hidden;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--primary) 0%, #0a58ca 100%);
+      color: white;
+      transition: var(--transition);
+      z-index: 1000;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+
+    .sidebar.collapsed .logo span,
+    .sidebar.collapsed .menu span,
+    .sidebar.collapsed .sidebar-footer {
+      display: none;
+    }
+
+    .logo {
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo i {
+      font-size: 1.75rem;
+    }
+
+    .logo span {
+      font-size: 1.25rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .menu {
+      list-style: none;
+      padding: 1rem 0;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .menu li {
+      margin-bottom: 0.25rem;
+    }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1.25rem;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .menu a:hover,
+    .menu li.active a {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-left: 4px solid white;
+    }
+
+    .menu i {
+      font-size: 1.1rem;
+      width: 24px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      font-size: 0.75rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      transition: var(--transition);
+      min-height: 100vh;
+    }
+
+    .sidebar.collapsed + .main-content {
+      margin-left: var(--sidebar-collapsed-width);
+    }
+
+    /* Topbar */
+    .topbar {
+      height: var(--topbar-height);
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 999;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .toggle-btn:hover {
+      background-color: var(--light);
+    }
+
+    .topbar h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .icon-btn:hover {
+      background-color: var(--light);
+    }
+
+    .user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .user span a {
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .user img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: var(--light);
+      color: var(--dark);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+      background-color: #e9ecef;
+    }
+
+    /* Content Area */
+    .content-area {
+      padding: 1.5rem;
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+      transition: var(--transition);
+      border: none;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .form-card {
+      padding: 0;
+    }
+
+    .card-header {
+      background-color: #fff;
+      border-bottom: 1px solid #edf2f9;
+      padding: 1.25rem;
+      border-radius: var(--card-radius) var(--card-radius) 0 0 !important;
+    }
+
+    .card-header h5 {
+      margin: 0;
+      color: var(--dark);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-header i {
+      color: var(--primary);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Form Elements */
+    .input-group {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 1rem;
+    }
+
+    .input-group-text {
+      border: none;
+      background-color: var(--light);
+      color: var(--primary);
+      padding: 0.75rem 1rem;
+      min-width: 50px;
+    }
+
+    .form-control {
+      border: none;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      background-color: #fff;
+    }
+
+    .form-control:focus {
+      box-shadow: none;
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: var(--transition);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background-color: #0b5ed7;
+      transform: translateY(-2px);
+      color: white;
+    }
+
+    /* Table Sections */
+    .table-section {
+      background: white;
+      border-radius: var(--card-radius);
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .table-section h3 {
+      margin-bottom: 1.25rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background-color: var(--light);
+    }
+
+    th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: var(--dark);
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #edf2f9;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status {
+      padding: 0.375rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status.active {
+      background-color: #d1e7dd;
+      color: var(--success);
+    }
+
+    .status.pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+
+    /* Patient Info Card */
+    .patient-info {
+      background: linear-gradient(135deg, var(--primary) 0%, #0a58ca 100%);
+      color: white;
+      border-radius: var(--card-radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .patient-info h3 {
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .patient-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-label {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+
+    .detail-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Messages */
+    .alert {
+      border-radius: 10px;
+      border: none;
+      margin-bottom: 1rem;
+    }
+
+    .alert-success {
+      background-color: #d1e7dd;
+      color: #0f5132;
+    }
+
+    .alert-error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .sidebar {
+        width: var(--sidebar-collapsed-width);
+      }
+
+      .sidebar .logo span,
+      .sidebar .menu span,
+      .sidebar .sidebar-footer {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: var(--sidebar-collapsed-width);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-width);
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .sidebar.mobile-open .logo span,
+      .sidebar.mobile-open .menu span,
+      .sidebar.mobile-open .sidebar-footer {
+        display: flex;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .topbar-left h2 {
+        font-size: 1.25rem;
+      }
+
+      .patient-details {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .topbar,
+    body.dark-mode .card,
+    body.dark-mode .table-section {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .card-header,
+    body.dark-mode .table-section h3 {
+      color: #e0e0e0;
+    }
+
+    body.dark-mode th,
+    body.dark-mode td {
+      border-color: #333;
+    }
+
+    body.dark-mode thead {
+      background-color: #252525;
+    }
+
+    body.dark-mode .input-group-text {
+      background-color: #252525;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .form-control {
+      background-color: #252525;
+      color: #e0e0e0;
+      border: 1px solid #333;
+    }
+
+    body.dark-mode .logout-btn {
+      background-color: #252525;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .logout-btn:hover {
+      background-color: #333;
+    }
+
+    body.dark-mode .icon-btn:hover,
+    body.dark-mode .toggle-btn:hover {
+      background-color: #252525;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <i class="fas fa-hospital"></i>
+      <span>MediShare</span>
+    </div>
+    <ul class="menu">
+      <li>
+        <a href="{% url 'hospitaldash' %}"><i class="fas fa-home"></i><span>Dashboard</span></a>
+      </li>
+      <li>
+        <a href="{% url 'hospital_management' %}"><i class="fas fa-tasks"></i><span>Management</span></a>
+      </li>
+      <li class="active">
+        <a href="{% url 'hospital_patient_records' %}"><i class="fas fa-procedures"></i><span>Patient Records</span></a>
+      </li>
+      <li>
+        <a href="#"><i class="fas fa-calendar"></i><span>Appointments</span></a>
+      </li>
+      <li>
+        <a href="{% url 'hospitalprofile' %}"><i class="fas fa-cogs"></i><span>Settings</span></a>
+      </li>
+    </ul>
+    <div class="sidebar-footer">© 2025 MediShare</div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="toggle-btn" id="mobileToggle"><i class="fas fa-bars"></i></button>
+        <h2>Patient Records</h2>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme">
+          <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+        <div class="user">
+          <span><a href="{% url 'hospitalprofile' %}">👤 Hi, {{ usr_name }}</a></span>
+          {% if hospital.image %}
+          <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}">
+          {% else %}
+          <img src="https://i.pravatar.cc/100" alt="Hospital">
+          {% endif %}
+        </div>
+        <a href="{% url 'userlogout' %}" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="content-area">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="content-area">
+      <!-- Search Form -->
+      <div class="card form-card">
+        <div class="card-header">
+          <h5><i class="fas fa-search"></i> Access Patient Records</h5>
+        </div>
+        <div class="card-body">
+          <form method="POST" action="{% url 'hospital_patient_records' %}">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-user"></i></span>
+                  <input type="text" class="form-control" name="username" 
+                         placeholder="Patient Username" 
+                         value="{{ searched_username|default:'' }}" 
+                         required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text"><i class="fas fa-key"></i></span>
+                  <input type="text" class="form-control" name="security_key" 
+                         placeholder="Security Key" 
+                         value="{{ searched_security_key|default:'' }}" 
+                         required>
+                </div>
+              </div>
+            </div>
+            <div class="text-end mt-3">
+              <button type="submit" class="btn-primary">
+                <i class="fas fa-search"></i> Search Records
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Patient Information -->
+      {% if patient %}
+      <div class="patient-info">
+        <h3><i class="fas fa-user-injured"></i> Patient Information</h3>
+        <div class="patient-details">
+          <div class="detail-item">
+            <span class="detail-label">Full Name</span>
+            <span class="detail-value">{{ patient.fullname }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Username</span>
+            <span class="detail-value">{{ patient.username }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Email</span>
+            <span class="detail-value">{{ patient.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Phone</span>
+            <span class="detail-value">{{ patient.phone }}</span>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Medical Records -->
+      {% if records %}
+      <div class="table-section">
+        <h3><i class="fas fa-file-medical"></i> Medical Records ({{ records.count }})</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Record Type</th>
+              <th>Description</th>
+              <th>File</th>
+              <th>Upload Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for record in records %}
+            <tr>
+              <td>
+                <strong>{{ record.record_type }}</strong>
+              </td>
+              <td>{{ record.description|truncatewords:15 }}</td>
+              <td>
+                {% if record.file %}
+                <span class="status active">Available</span>
+                {% else %}
+                <span class="status pending">No File</span>
+                {% endif %}
+              </td>
+              <td>{{ record.uploaded_at|date:"M d, Y" }}</td>
+              <td>
+                <div class="action-buttons">
+                  {% if record.file %}
+                  <a href="{{ record.file.url }}" class="btn-primary btn-sm" target="_blank" download>
+                    <i class="fas fa-download"></i> Download
+                  </a>
+                  {% endif %}
+                  <button class="btn-primary btn-sm" onclick="viewRecordDetails('{{ record.id }}')">
+                    <i class="fas fa-eye"></i> View
+                  </button>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% elif patient and not records %}
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-file-medical-alt fa-3x text-muted mb-3"></i>
+          <h4 class="text-muted">No Medical Records Found</h4>
+          <p class="text-muted">This patient doesn't have any medical records uploaded yet.</p>
+        </div>
+      </div>
+      {% elif request.method == 'POST' and not patient %}
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-search fa-3x text-muted mb-3"></i>
+          <h4 class="text-muted">Patient Not Found</h4>
+          <p class="text-muted">Please check the username and security key and try again.</p>
+        </div>
+      </div>
+      {% else %}
+      <div class="card">
+        <div class="card-body text-center py-5">
+          <i class="fas fa-user-shield fa-3x text-muted mb-3"></i>
+          <h4 class="text-muted">Secure Patient Record Access</h4>
+          <p class="text-muted">Enter the patient's username and security key to access their medical records.</p>
+          <div class="mt-4">
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <strong>Note:</strong> You need the patient's security key to access their records. 
+              This ensures patient privacy and data security.
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JavaScript -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sidebar functionality
+      const sidebar = document.getElementById('sidebar');
+      const mobileToggle = document.getElementById('mobileToggle');
+      
+      // Mobile toggle functionality
+      mobileToggle.addEventListener('click', function() {
+        if (window.innerWidth < 768) {
+          sidebar.classList.toggle('mobile-open');
+        } else {
+          sidebar.classList.toggle('collapsed');
+        }
+      });
+
+      // Theme toggle functionality
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      
+      themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        if (document.body.classList.contains('dark-mode')) {
+          themeIcon.classList.remove('fa-moon');
+          themeIcon.classList.add('fa-sun');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          themeIcon.classList.remove('fa-sun');
+          themeIcon.classList.add('fa-moon');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+
+      // Load saved theme
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+      }
+
+      // Close sidebar when clicking on mobile
+      document.addEventListener('click', function(event) {
+        if (window.innerWidth < 768 && 
+            !sidebar.contains(event.target) && 
+            !mobileToggle.contains(event.target) &&
+            sidebar.classList.contains('mobile-open')) {
+          sidebar.classList.remove('mobile-open');
+        }
+      });
+
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        if (window.innerWidth >= 768) {
+          sidebar.classList.remove('mobile-open');
+        }
+      });
+
+      console.log('Patient records page loaded successfully');
+    });
+
+    // View record details function
+    function viewRecordDetails(recordId) {
+      alert('Viewing details for record ID: ' + recordId + '\n\nIn a real implementation, this would open a modal with full record details.');
+      // In real implementation, this would fetch record details via AJAX and show in a modal
+    }
+
+    // Auto-focus on search input if no patient is found
+    // {% if not patient and request.method == 'POST' %}
+    // document.addEventListener('DOMContentLoaded', function() {
+    //   const usernameInput = document.querySelector('input[name="username"]');
+    //   if (usernameInput) {
+    //     usernameInput.focus();
+    //     usernameInput.select();
+    //   }
+    // });
+    // {% endif %}
+  </script>
+</body>
+</html>

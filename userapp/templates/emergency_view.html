@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-warning text-center">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        <strong>EMERGENCY ACCESS MODE</strong>
+        <small class="d-block">Patient: {{ patient.fullname }}</small>
+    </div>
+
+    <!-- Medical Information -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0"><i class="fas fa-notes-medical me-2"></i>Critical Medical Information</h5>
+        </div>
+        <div class="card-body">
+            {% if emergency_info %}
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 class="text-danger">Blood Type</h6>
+                    <p class="badge bg-danger">{{ emergency_info.blood_type }}</p>
+                    
+                    <h6 class="text-danger mt-3">Current Medications</h6>
+                    <p>{{ emergency_info.current_medications|linebreaks|default:"None listed" }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="text-danger">Allergies</h6>
+                    <p>{{ emergency_info.allergies|linebreaks|default:"None listed" }}</p>
+                    
+                    <h6 class="text-danger">Chronic Conditions</h6>
+                    <p>{{ emergency_info.chronic_conditions|linebreaks|default:"None listed" }}</p>
+                </div>
+            </div>
+
+            {% if emergency_info.emergency_instructions %}
+            <div class="alert alert-warning mt-3">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Special Instructions</h6>
+                {{ emergency_info.emergency_instructions|linebreaks }}
+            </div>
+            {% endif %}
+
+            {% if emergency_info.organ_donor %}
+            <div class="alert alert-success mt-3">
+                <i class="fas fa-heart me-2"></i>
+                <strong>Registered Organ Donor</strong>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                No emergency medical information available
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Emergency Contacts -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Emergency Contacts</h5>
+        </div>
+        <div class="card-body">
+            {% if emergency_contacts %}
+                {% for contact in emergency_contacts %}
+                <div class="mb-3 p-3 border rounded {% if contact.is_primary %}bg-light{% endif %}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{ contact.name }}</h6>
+                            <span class="badge bg-secondary">{{ contact.relationship }}</span>
+                            {% if contact.is_primary %}
+                            <span class="badge bg-success">Primary Contact</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="tel:{{ contact.phone }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-phone"></i>
+                            </a>
+                            {% if contact.email %}
+                            <a href="mailto:{{ contact.email }}" class="btn btn-sm btn-outline-secondary ms-1">
+                                <i class="fas fa-envelope"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                No emergency contacts listed
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Medical Records -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>Medical Records</h5>
+        </div>
+        <div class="card-body">
+            {% if medical_records %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Title</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in medical_records %}
+                        <tr>
+                            <td>{{ record.uploaded_at|date:"M d, Y" }}</td>
+                            <td>{{ record.title }}</td>
+                            <td>
+                                <a href="{{ record.file.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i>View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                No medical records available
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Floating Emergency Action Button -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <a href="tel:112" class="btn btn-danger btn-lg rounded-circle shadow" 
+       onclick="return confirm('Call emergency services (112)?')">
+        <i class="fas fa-phone fa-lg"></i>
+    </a>
+</div>
+{% endblock %}

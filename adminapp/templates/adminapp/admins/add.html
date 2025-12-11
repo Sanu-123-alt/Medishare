@@ -1,0 +1,205 @@
+{% extends 'adminapp/base.html' %}
+
+{% block title %}Add Admin - MedAdmin{% endblock %}
+{% block page_title %}Add New Administrator{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Account Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Account Information</h3>
+                </div>
+                
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Username *
+                    </label>
+                    <input type="text" id="username" name="username" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter username">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email Address *
+                    </label>
+                    <input type="email" id="email" name="email" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter email address">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password *
+                    </label>
+                    <input type="password" id="password" name="password" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter password">
+                    <div id="password-strength" class="text-xs mt-1 text-gray-500"></div>
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-phone mr-2"></i>Phone Number
+                    </label>
+                    <input type="tel" id="phone" name="phone" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter phone number">
+                </div>
+
+                <!-- Personal Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Personal Information</h3>
+                </div>
+                
+                <div>
+                    <label for="first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-signature mr-2"></i>First Name
+                    </label>
+                    <input type="text" id="first_name" name="first_name" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter first name">
+                </div>
+                
+                <div>
+                    <label for="last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-signature mr-2"></i>Last Name
+                    </label>
+                    <input type="text" id="last_name" name="last_name" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter last name">
+                </div>
+
+                <!-- Role Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Role Information</h3>
+                </div>
+                
+                <div>
+                    <label for="department" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-building mr-2"></i>Department
+                    </label>
+                    <select id="department" name="department" 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="">Select Department</option>
+                        <option value="IT">Information Technology</option>
+                        <option value="HR">Human Resources</option>
+                        <option value="Operations">Operations</option>
+                        <option value="Medical">Medical Affairs</option>
+                        <option value="Finance">Finance</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Support">Customer Support</option>
+                        <option value="Quality">Quality Assurance</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="role" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user-tie mr-2"></i>Role *
+                    </label>
+                    <select id="role" name="role" required 
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="General Admin">General Administrator</option>
+                        <option value="Super Admin">Super Administrator</option>
+                        <option value="Content Manager">Content Manager</option>
+                        <option value="Support Staff">Support Staff</option>
+                        <option value="Moderator">Moderator</option>
+                        <option value="Analyst">Data Analyst</option>
+                        <option value="Auditor">System Auditor</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Role Permissions Guide -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 class="font-semibold text-blue-800 mb-3">Role Permissions Guide</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <h5 class="font-medium text-blue-700 mb-2">Recommended Roles</h5>
+                        <ul class="text-blue-600 space-y-1">
+                            <li><strong>Super Admin:</strong> Full system control (use sparingly)</li>
+                            <li><strong>General Admin:</strong> Day-to-day management tasks</li>
+                            <li><strong>Content Manager:</strong> For moderating user content</li>
+                            <li><strong>Support Staff:</strong> For customer support teams</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 class="font-medium text-blue-700 mb-2">Permissions</h5>
+                        <ul class="text-blue-600 space-y-1">
+                            <li>✅ User & Doctor management</li>
+                            <li>✅ Hospital & Appointment management</li>
+                            <li>⚠️ Admin management (Super Admin only)</li>
+                            <li>⚠️ System configuration (Super Admin only)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <a href="{% url 'admin_list' %}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Cancel</span>
+                </a>
+                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Add Administrator</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Password strength indicator
+        const passwordInput = document.getElementById('password');
+        const passwordStrength = document.getElementById('password-strength');
+
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            let strength = 0;
+            let message = '';
+            let color = 'text-gray-500';
+
+            if (password.length > 0) {
+                if (password.length < 6) {
+                    strength = 1;
+                    message = 'Very Weak - Minimum 6 characters recommended';
+                    color = 'text-red-500';
+                } else if (password.length < 8) {
+                    strength = 2;
+                    message = 'Weak - Consider adding more characters';
+                    color = 'text-orange-500';
+                } else if (password.length < 10) {
+                    strength = 3;
+                    message = 'Good - Adequate for most accounts';
+                    color = 'text-yellow-500';
+                } else {
+                    strength = 4;
+                    message = 'Strong - Good password length';
+                    color = 'text-green-500';
+                }
+
+                // Check for special characters and numbers
+                if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+
+                if (strength >= 6) {
+                    message = 'Very Strong - Excellent password security';
+                    color = 'text-green-600';
+                }
+            } else {
+                message = 'Enter a password to check strength';
+            }
+
+            passwordStrength.textContent = message;
+            passwordStrength.className = `text-xs mt-1 font-medium ${color}`;
+        });
+    });
+</script>
+{% endblock %}

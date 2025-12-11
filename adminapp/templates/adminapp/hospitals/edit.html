@@ -1,0 +1,263 @@
+{% extends 'adminapp/base.html' %}
+
+{% block title %}Edit Hospital - MedAdmin{% endblock %}
+{% block page_title %}Edit Hospital: {{ hospital.name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Basic Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Basic Information</h3>
+                </div>
+                
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-hospital mr-2"></i>Hospital Name *
+                    </label>
+                    <input type="text" id="name" name="name" value="{{ hospital.name }}" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter hospital name">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email Address *
+                    </label>
+                    <input type="email" id="email" name="email" value="{{ hospital.email }}" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter email address">
+                </div>
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-phone mr-2"></i>Phone Number *
+                    </label>
+                    <input type="tel" id="phone" name="phone" value="{{ hospital.phone }}" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter phone number">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2"></i>New Password
+                    </label>
+                    <input type="password" id="password" name="password" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Leave blank to keep current password">
+                    <p class="text-xs text-gray-500 mt-1">Leave empty to keep current password</p>
+                </div>
+
+                <!-- Location Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Location Information</h3>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-map-marker-alt mr-2"></i>Location Address *
+                    </label>
+                    <input type="text" id="location" name="location" value="{{ hospital.location }}" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Enter full address">
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="google_maps_link" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-map-marked-alt mr-2"></i>Google Maps Link
+                    </label>
+                    <input type="url" id="google_maps_link" name="google_maps_link" value="{{ hospital.google_maps_link|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="https://maps.google.com/...">
+                </div>
+
+                <!-- Hospital Details -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Hospital Details</h3>
+                </div>
+                
+                <div>
+                    <label for="established_year" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-calendar-alt mr-2"></i>Established Year
+                    </label>
+                    <input type="number" id="established_year" name="established_year" value="{{ hospital.established_year|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="e.g., 1990"
+                           min="1800" max="{% now 'Y' %}">
+                </div>
+                
+                <div>
+                    <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-globe mr-2"></i>Website
+                    </label>
+                    <input type="url" id="website" name="website" value="{{ hospital.website|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="https://example.com">
+                </div>
+
+                <!-- Emergency Information -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Emergency Information</h3>
+                </div>
+                
+                <div>
+                    <label for="emergency_contact" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-ambulance mr-2"></i>Emergency Contact
+                    </label>
+                    <input type="tel" id="emergency_contact" name="emergency_contact" value="{{ hospital.emergency_contact|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Emergency phone number">
+                </div>
+                
+                <div>
+                    <label for="ambulance_number" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-ambulance mr-2"></i>Ambulance Number
+                    </label>
+                    <input type="text" id="ambulance_number" name="ambulance_number" value="{{ hospital.ambulance_number|default:'' }}" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           placeholder="Ambulance contact number">
+                </div>
+
+                <!-- Description & Image -->
+                <div class="md:col-span-2">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Additional Information</h3>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-file-alt mr-2"></i>Description
+                    </label>
+                    <textarea id="description" name="description" rows="4" 
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              placeholder="Describe the hospital's facilities, specialties, and services...">{{ hospital.description|default:'' }}</textarea>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-camera mr-2"></i>Hospital Image
+                    </label>
+                    
+                    {% if hospital.image %}
+                    <div class="mb-4 p-4 border border-gray-200 rounded-lg bg-gray-50">
+                        <p class="text-sm font-medium text-gray-700 mb-2">Current Image:</p>
+                        <div class="flex items-center space-x-4">
+                            <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}" class="w-32 h-32 rounded-lg object-cover border">
+                            <div class="text-sm text-gray-600">
+                                <p><strong>File:</strong> {{ hospital.image.name|slice:"16:" }}</p>
+                                <p><strong>Uploaded:</strong> {% now "M d, Y" %}</p>
+                                <button type="button" onclick="document.getElementById('remove_image').value = 'true'" 
+                                        class="mt-2 text-red-600 hover:text-red-800 text-sm flex items-center space-x-1">
+                                    <i class="fas fa-trash"></i>
+                                    <span>Remove Image</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="remove_image" name="remove_image" value="false">
+                    {% endif %}
+                    
+                    <input type="file" id="image" name="image" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           accept="image/*">
+                    <p class="text-xs text-gray-500 mt-1">Recommended: Landscape image, max 5MB (JPEG, PNG, WebP)</p>
+                </div>
+            </div>
+
+            <!-- Statistics Card -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h4 class="font-semibold text-blue-800 mb-3 flex items-center">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Hospital Statistics
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                    <div class="text-center">
+                        <div class="text-blue-600 font-semibold">{{ hospital.doctors.count }}</div>
+                        <div class="text-blue-700">Doctors</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-green-600 font-semibold">{{ hospital.departments.count }}</div>
+                        <div class="text-green-700">Departments</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-purple-600 font-semibold">{{ hospital.services.count }}</div>
+                        <div class="text-purple-700">Services</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-orange-600 font-semibold">{{ hospital.achievements.count }}</div>
+                        <div class="text-orange-700">Achievements</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <a href="{% url 'hospital_list' %}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Cancel</span>
+                </a>
+                <button type="submit" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-2">
+                    <i class="fas fa-save"></i>
+                    <span>Update Hospital</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image preview functionality
+        const imageInput = document.getElementById('image');
+        const currentImage = document.querySelector('img[alt="{{ hospital.name }}"]');
+        
+        imageInput.addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    // Create preview if it doesn't exist
+                    let preview = document.getElementById('image-preview');
+                    if (!preview) {
+                        preview = document.createElement('div');
+                        preview.id = 'image-preview';
+                        preview.className = 'mt-4 p-4 border border-gray-200 rounded-lg bg-gray-50';
+                        preview.innerHTML = `
+                            <p class="text-sm font-medium text-gray-700 mb-2">New Image Preview:</p>
+                            <img src="" alt="Preview" class="w-32 h-32 rounded-lg object-cover border">
+                        `;
+                        imageInput.parentNode.appendChild(preview);
+                    }
+                    
+                    preview.querySelector('img').src = e.target.result;
+                }
+                
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        // Year validation
+        const yearInput = document.getElementById('established_year');
+        if (yearInput) {
+            yearInput.addEventListener('input', function() {
+                const currentYear = new Date().getFullYear();
+                if (this.value > currentYear) {
+                    this.setCustomValidity('Established year cannot be in the future');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+
+        // Phone number formatting
+        const phoneInputs = document.querySelectorAll('input[type="tel"]');
+        phoneInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9+-\s]/g, '');
+            });
+        });
+    });
+</script>
+{% endblock %}

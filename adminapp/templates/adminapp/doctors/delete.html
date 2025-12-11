@@ -1,0 +1,220 @@
+{% extends 'adminapp/base.html' %}
+
+{% block title %}Delete Doctor - MedAdmin{% endblock %}
+{% block page_title %}Delete Doctor{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-xl shadow-lg p-6">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-exclamation-triangle text-red-500 text-2xl"></i>
+            </div>
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Confirm Doctor Deletion</h2>
+            <p class="text-gray-600">Are you sure you want to delete this doctor? This action cannot be undone.</p>
+        </div>
+
+        <!-- Doctor Details -->
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex items-start space-x-4">
+                {% if doctor.image %}
+                <img src="{{ doctor.image.url }}" alt="{{ doctor.name }}" class="w-16 h-16 rounded-lg object-cover">
+                {% else %}
+                <div class="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-md text-gray-400 text-xl"></i>
+                </div>
+                {% endif %}
+                <div class="flex-1">
+                    <h3 class="font-semibold text-red-800">Dr. {{ doctor.name }}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 text-sm">
+                        <div>
+                            <span class="text-red-700 font-medium">Specialization:</span>
+                            <span class="text-red-600 ml-2">{{ doctor.specialization }}</span>
+                        </div>
+                        <div>
+                            <span class="text-red-700 font-medium">Hospital:</span>
+                            <span class="text-red-600 ml-2">{{ doctor.hospital.name }}</span>
+                        </div>
+                        <div>
+                            <span class="text-red-700 font-medium">Email:</span>
+                            <span class="text-red-600 ml-2">{{ doctor.email }}</span>
+                        </div>
+                        <div>
+                            <span class="text-red-700 font-medium">Phone:</span>
+                            <span class="text-red-600 ml-2">{{ doctor.phone }}</span>
+                        </div>
+                        {% if doctor.experience %}
+                        <div>
+                            <span class="text-red-700 font-medium">Experience:</span>
+                            <span class="text-red-600 ml-2">{{ doctor.experience }}</span>
+                        </div>
+                        {% endif %}
+                        {% if doctor.qualifications %}
+                        <div>
+                            <span class="text-red-700 font-medium">Qualifications:</span>
+                            <span class="text-red-600 ml-2">{{ doctor.qualifications }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warning Information -->
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+            <div class="flex items-start space-x-3">
+                <i class="fas fa-exclamation-circle text-yellow-500 mt-1"></i>
+                <div>
+                    <h4 class="font-semibold text-yellow-800">Important Notice</h4>
+                    <ul class="text-yellow-700 text-sm mt-2 space-y-1">
+                        <li>• All appointment slots created by this doctor will be deleted</li>
+                        <li>• All appointments with this doctor will be cancelled</li>
+                        <li>• All reviews for this doctor will be removed</li>
+                        <li>• Patients will no longer be able to book appointments with this doctor</li>
+                        <li>• This action is permanent and cannot be recovered</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Doctor Statistics -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center">
+            <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="text-lg font-semibold text-gray-800">{{ doctor.appointmentslot_set.count }}</div>
+                <div class="text-sm text-gray-600">Appointment Slots</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="text-lg font-semibold text-gray-800">{{ doctor.appointment_set.count }}</div>
+                <div class="text-sm text-gray-600">Total Appointments</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="text-lg font-semibold text-gray-800">{{ doctor.review_set.count }}</div>
+                <div class="text-sm text-gray-600">Reviews</div>
+            </div>
+            <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="text-lg font-semibold text-gray-800">
+                    {% if doctor.review_set.count > 0 %}
+                    {{ doctor.review_set.aggregate_rating|default:"0" }}/5
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </div>
+                <div class="text-sm text-gray-600">Average Rating</div>
+            </div>
+        </div>
+
+        <!-- Appointment Details -->
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-calendar-alt mr-2"></i>
+                Appointment Overview
+            </h4>
+            <div class="space-y-2 text-sm">
+                {% with upcoming_appointments=doctor.appointment_set.filter.status='booked' %}
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Upcoming Appointments:</span>
+                    <span class="text-gray-800 font-medium">{{ upcoming_appointments.count }}</span>
+                </div>
+                {% endwith %}
+                
+                {% with available_slots=doctor.appointmentslot_set.filter.status='available' %}
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Available Slots:</span>
+                    <span class="text-gray-800 font-medium">{{ available_slots.count }}</span>
+                </div>
+                {% endwith %}
+                
+                {% with next_slot=doctor.appointmentslot_set.filter.status='available'.order_by('date', 'time').first %}
+                {% if next_slot %}
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Next Available Slot:</span>
+                    <span class="text-gray-800 font-medium">{{ next_slot.date }} at {{ next_slot.time }}</span>
+                </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+
+        <!-- Recent Reviews -->
+        {% with recent_reviews=doctor.review_set.all|slice:":3" %}
+        {% if recent_reviews %}
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+            <h4 class="font-semibold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-star mr-2"></i>
+                Recent Reviews
+            </h4>
+            <div class="space-y-3">
+                {% for review in recent_reviews %}
+                <div class="border-l-4 border-blue-500 pl-3 py-1">
+                    <div class="flex justify-between items-start">
+                        <span class="text-sm font-medium text-gray-800">
+                            {{ review.get_reviewer_name }}
+                        </span>
+                        <span class="text-yellow-500 text-sm">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">{{ review.comment|truncatewords:15 }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label for="confirm_name" class="block text-sm font-medium text-gray-700 mb-2">
+                    Type the doctor's name to confirm deletion:
+                </label>
+                <input type="text" id="confirm_name" name="confirm_name" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                       placeholder="Type 'Dr. {{ doctor.name }}' to confirm">
+            </div>
+
+            <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200">
+                <a href="{% url 'doctor_list' %}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200 flex items-center space-x-2">
+                    <i class="fas fa-times"></i>
+                    <span>Cancel</span>
+                </a>
+                <button type="submit" 
+                        onclick="return document.getElementById('confirm_name').value === 'Dr. {{ doctor.name }}'"
+                        class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 flex items-center space-x-2 disabled:bg-red-300 disabled:cursor-not-allowed"
+                        id="deleteBtn">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete Doctor</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const confirmInput = document.getElementById('confirm_name');
+        const deleteBtn = document.getElementById('deleteBtn');
+        
+        confirmInput.addEventListener('input', function() {
+            if (this.value === 'Dr. {{ doctor.name }}') {
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('disabled:bg-red-300', 'disabled:cursor-not-allowed');
+            } else {
+                deleteBtn.disabled = true;
+                deleteBtn.classList.add('disabled:bg-red-300', 'disabled:cursor-not-allowed');
+            }
+        });
+
+        // Initialize button state
+        deleteBtn.disabled = true;
+        deleteBtn.classList.add('disabled:bg-red-300', 'disabled:cursor-not-allowed');
+    });
+</script>
+{% endblock %}

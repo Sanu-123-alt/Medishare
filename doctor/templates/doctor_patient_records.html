@@ -1,0 +1,127 @@
+{% extends "doctor_dashboard.html" %}
+{% load static %}
+
+{% block content %}
+<div class="p-8">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-8">
+        <div class="flex-1">
+            <div class="max-w-xl">
+                <label class="flex flex-col min-w-40 h-12 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                        <div class="text-gray-500 dark:text-gray-400 flex border-none bg-white dark:bg-gray-900 items-center justify-center pl-4 rounded-l-lg border-r-0">
+                            <span class="material-symbols-outlined">search</span>
+                        </div>
+                        <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111618] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-white dark:bg-gray-900 focus:border-none h-full placeholder:text-gray-500 dark:placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" 
+                               placeholder="Search patient records..." 
+                               value=""/>
+                    </div>
+                </label>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <button class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white relative">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <a href="{% url 'doctor_port' %}" class="flex items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white">
+                <span class="material-symbols-outlined">settings</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Page Heading -->
+    <div class="flex flex-wrap justify-between gap-3 mb-8">
+        <div class="flex min-w-72 flex-col gap-3">
+            <p class="text-[#111618] dark:text-white text-4xl font-black leading-tight tracking-[-0.033em]">
+                Patient Records
+            </p>
+            <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">
+                Access and view patient medical records with proper authorization
+            </p>
+        </div>
+        <a href="{% url 'doctor_dashboard' %}" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gray-200/50 dark:bg-gray-800/50 text-[#111618] dark:text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors">
+            <span class="truncate">Back to Dashboard</span>
+        </a>
+    </div>
+
+    <!-- Access Patient Records Form -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-[#111618] dark:text-white">Access Patient Records</h2>
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Patient Username</label>
+                    <input type="text" name="username" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Security Key (6-8 digits)</label>
+                    <input type="text" name="security_key" pattern="\d{6,8}" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary/50 focus:border-primary" required>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <button type="submit" class="flex cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-6 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
+                    <span class="truncate">Verify & Access Records</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if patient %}
+    <!-- Patient Information -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
+        <h2 class="text-xl font-semibold mb-4 text-[#111618] dark:text-white">Patient Information</h2>
+        <div class="flex items-center gap-4">
+            <div class="bg-primary rounded-full size-14 flex items-center justify-center text-white text-xl font-bold">
+                {{ patient.fullname|first }}
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-[#111618] dark:text-white">{{ patient.fullname }}</h3>
+                <p class="text-gray-500 dark:text-gray-400">Username: {{ patient.username }}</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if records %}
+    <!-- Patient Records Table -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-[#111618] dark:text-white">Medical Records</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Title</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Uploaded At</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for record in records %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#111618] dark:text-white">{{ record.title }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ record.uploaded_at|date:"M d, Y H:i" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <a href="{{ record.file.url }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary hover:bg-primary/20 dark:hover:bg-primary/30 transition-colors">
+                                <span class="material-symbols-outlined text-sm">visibility</span>
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% elif patient and not records %}
+    <!-- No Records Message -->
+    <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+        <span class="material-symbols-outlined text-gray-400 text-5xl mb-4">folder_off</span>
+        <h3 class="text-lg font-medium text-[#111618] dark:text-white mb-2">No Medical Records Found</h3>
+        <p class="text-gray-500 dark:text-gray-400">This patient doesn't have any medical records uploaded yet.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

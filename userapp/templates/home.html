@@ -1,0 +1,1654 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediShare | Next-Gen Healthcare Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'home.css' %}">
+    <style>
+        :root {
+            --primary-bg: #f8f9fa;
+            --secondary-bg: #e9ecef;
+            --text-color: #212529;
+            --accent-blue: #007bff;
+            --accent-purple: #6f42c1;
+            --accent-green: #28a745;
+            --neon-blue: #007bff;
+            --neon-purple: #6f42c1;
+            --neon-green: #28a745;
+            --doctor-color: #6f42c1;
+            --hospital-color: #28a745;
+            --navbar-bg: #e7f1ff;
+        }
+
+        body {
+            background: var(--primary-bg);
+            color: var(--text-color);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .navbar {
+            background: var(--navbar-bg) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: var(--text-color) !important;
+        }
+
+        .navbar-brand:hover,
+        .nav-link:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .btn-nav {
+            background: var(--accent-blue);
+            color: #ffffff;
+        }
+
+        /* Enhanced Search Results Styles */
+        .search-results {
+            transition: all 0.3s ease;
+        }
+
+        .doctor-location,
+        .hospital-location {
+            color: var(--accent-blue);
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .doctor-location i,
+        .hospital-location i {
+            margin-right: 5px;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-results:not(.active) {
+            display: block;
+        }
+
+        /* Search Summary Styles */
+.search-summary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.search-summary h4 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.search-summary .text-primary {
+    color: #ffd700 !important;
+    font-weight: 700;
+}
+
+.featured-section h4 {
+    color: var(--accent-blue);
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+        /* Search tabs enhancement */
+        .search-tabs {
+            display: flex;
+            border-bottom: 2px solid #dee2e6;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-weight: 500;
+            color: #6c757d;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .search-tab.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+
+        .search-tab:hover {
+            color: var(--accent-blue);
+            background-color: rgba(0, 123, 255, 0.02);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .search-tabs {
+                justify-content: center;
+            }
+
+            .search-tab {
+                padding: 10px 16px;
+                font-size: 0.9rem;
+            }
+
+            .doctor-card,
+            .hospital-card {
+                text-align: center;
+            }
+
+            .doctor-image,
+            .hospital-image {
+                margin: 0 auto 15px auto;
+            }
+        }
+
+        /* No results styling */
+        .text-muted i {
+            opacity: 0.7;
+        }
+
+        /* Profile Image Styles */
+        .profile-image {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-blue);
+        }
+
+        .profile-placeholder {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+        }
+
+        .hospital-placeholder {
+            background-color: var(--accent-blue);
+        }
+
+        .doctor-placeholder {
+            background-color: var(--accent-purple);
+        }
+
+        .user-placeholder {
+            background-color: var(--accent-green);
+        }
+
+        /* Dropdown Styles */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--primary-light);
+            color: var(--accent-blue);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Profile Dropdown Styles */
+        .navbar-nav .dropdown-toggle {
+            color: var(--text-color) !important;
+            text-decoration: none;
+        }
+
+        .navbar-nav .dropdown-toggle:hover {
+            color: var(--accent-blue) !important;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            padding: 0.5rem 0;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--primary-light);
+            color: var(--accent-blue);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+
+        /* Profile Image Styles */
+        .rounded-circle {
+            border: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+
+        .navbar-nav .dropdown-toggle:hover .rounded-circle {
+            border-color: var(--accent-blue);
+        }
+
+        /* Doctor-specific styles */
+        .bg-purple {
+            background-color: var(--accent-purple) !important;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--secondary-bg) 0%, var(--primary-bg) 100%);
+            position: relative;
+            padding: 100px 0;
+        }
+
+        .hero-title {
+            color: var(--text-color);
+        }
+
+        .hero-title span {
+            color: var(--accent-blue);
+        }
+
+        .hero-subtitle {
+            color: #495057;
+        }
+
+        .section-title {
+            color: var(--text-color);
+        }
+
+        .section-subtitle {
+            color: #495057;
+        }
+
+        .stats-card {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .upload-section {
+            background: var(--secondary-bg);
+        }
+
+        .upload-container {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+        }
+
+        .appointment-section {
+            background: var(--primary-bg);
+        }
+
+        .doctor-card,
+        .hospital-card {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+        }
+
+        .services-section {
+            background: var(--secondary-bg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+        }
+
+        .features-section {
+            background: var(--primary-bg);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .security-section {
+            background: var(--secondary-bg);
+        }
+
+        .security-container {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+        }
+
+        .cta-container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #dee2e6;
+        }
+
+        .bg-purple {
+            background-color: var(--accent-purple) !important;
+        }
+
+        .chatbot-container {
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+        }
+
+        .chatbot-header {
+            background: var(--accent-blue);
+            color: #ffffff;
+        }
+
+        .footer {
+            background: var(--secondary-bg);
+            color: var(--text-color);
+        }
+
+        .footer-logo,
+        .footer-title {
+            color: var(--text-color);
+        }
+
+        .footer-links a {
+            color: #495057;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        #particles-js {
+            background: transparent;
+        }
+
+        .text-muted {
+            color: #6c757d !important;
+        }
+
+        .form-control,
+        input[type="text"],
+        input[type="password"],
+        select {
+            background-color: #ffffff;
+            color: var(--text-color);
+            border: 1px solid #ced4da;
+        }
+
+        .form-control::placeholder,
+        input::placeholder {
+            color: #6c757d;
+        }
+
+        .form-control:focus,
+        input:focus,
+        select:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            color: var(--text-color);
+        }
+
+        .chatbot-input input {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+            border: 1px solid #ced4da;
+        }
+
+        .chatbot-input input::placeholder {
+            color: #6c757d;
+        }
+
+        .search-form .form-control {
+            background-color: #ffffff;
+        }
+
+        .upload-area input[type="file"] {
+            color: var(--text-color);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">MediShare</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#upload">Upload Data</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#appointments">Book Appointments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#security">Security</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#feedback">Feedback</a>
+                    </li>
+                </ul>
+
+                <!-- Right side (Login/Register OR Profile dropdown) -->
+                <div class="navbar-nav">
+                    {% if request.session.user_id %}
+                    <!-- User is logged in -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-5"></i>&nbsp;
+                            {{ request.session.user_name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'user_dashboard' %}">Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'view_records' %}">My Records</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'user_logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                    {% elif request.session.doctor_id %}
+                    <!-- Doctor is logged in -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="doctorDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if request.session.d_image %}
+                            <img src="{{ request.session.doctor_image }}" alt="Dr. {{ request.session.doctor_name }}"
+                                class="rounded-circle me-2" style="width: 32px; height: 32px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-purple text-white d-flex align-items-center justify-content-center me-2"
+                                style="width: 32px; height: 32px; background-color: var(--accent-purple);">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            {% endif %}
+                            Dr. {{ request.session.doctor_name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="doctorDropdown">
+                            <li><a class="dropdown-item" href="{% url 'doctor_dashboard' %}"><i
+                                        class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'doctor_appointment' %}"><i
+                                        class="fas fa-calendar me-2"></i>Appointments</a></li>
+                            <li><a class="dropdown-item" href="{% url 'doctor_patient_records' %}"><i
+                                        class="fas fa-procedures me-2"></i>Patients</a></li>
+                            <li><a class="dropdown-item" href="{% url 'doctor_port' %}"><i
+                                        class="fas fa-user me-2"></i>Profile</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'doctor_logout' %}"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    {% elif request.session.u_id %}
+                    <!-- Hospital is logged in -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="hospitalDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {% if hospital and hospital.image %}
+                            <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}" class="rounded-circle me-2"
+                                style="width: 32px; height: 32px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                style="width: 32px; height: 32px;">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                            {% endif %}
+                            {{ request.session.u_name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="hospitalDropdown">
+                            <li><a class="dropdown-item" href="{% url 'hospitaldash' %}"><i
+                                        class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{% url 'hospital_management' %}"><i
+                                        class="fas fa-cog me-2"></i>Management</a></li>
+                            <li><a class="dropdown-item" href="{% url 'hospital_patient_records' %}"><i
+                                        class="fas fa-procedures me-2"></i>Patient Records</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'userlogout' %}"><i
+                                        class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <!-- No one is logged in -->
+                    <a href="{% url 'choice_login' %}" class="btn btn-nav">Login/Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Particle Background -->
+    <div id="particles-js"></div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content" data-aos="fade-right" data-aos-delay="200">
+                    <h1 class="hero-title">The Future of Healthcare is Here<span>AI-Powered, Secure &
+                            Collaborative</span></h1>
+                    <p class="hero-subtitle">MediShare revolutionizes medical data management with blockchain security,
+                        AI insights, and seamless collaboration between patients, doctors, and hospitals.</p>
+                    <div class="d-flex gap-4">
+                        <a href="#upload" class="btn btn-nav">Upload Medical Data</a>
+                        <a href="#appointments" class="btn btn-outline-primary">Book Appointment</a>
+                    </div>
+                </div>
+                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="400">
+                    <div class="text-center mt-5 mt-lg-0">
+                        <img src="https://images.pexels.com/photos/40568/medical-appointment-doctor-healthcare-40568.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                            alt="MediShare Platform" class="img-fluid rounded" style="border-radius: 20px;">
+                        <p class="mt-3 text-muted">Secure. Intelligent. Always with you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-wave"></div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="dashboard-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Your Intelligent Health Dashboard</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Secure, intuitive, and powered by AI to
+                give you complete control over your medical data</p>
+            <div class="stats-container">
+                <div class="row g-4">
+                    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="stats-card floating">
+                            <div class="stats-icon"
+                                style="background: rgba(0, 123, 255, 0.15); color: var(--accent-blue);">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stats-number" id="userCount">25K+</div>
+                            <div class="stats-label">Active Users</div>
+                            <div class="stats-desc">Patients trusting our platform</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                        <div class="stats-card floating" style="animation-delay: 1s;">
+                            <div class="stats-icon"
+                                style="background: rgba(111, 66, 193, 0.15); color: var(--accent-purple);">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div class="stats-number" id="doctorCount">2,500+</div>
+                            <div class="stats-label">Verified Doctors</div>
+                            <div class="stats-desc">Medical professionals onboard</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="500">
+                        <div class="stats-card floating" style="animation-delay: 2s;">
+                            <div class="stats-icon"
+                                style="background: rgba(40, 167, 69, 0.15); color: var(--accent-green);">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                            <div class="stats-number" id="hospitalCount">500+</div>
+                            <div class="stats-label">Partner Hospitals</div>
+                            <div class="stats-desc">Healthcare institutions</div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6" data-aos="fade-up" data-aos-delay="600">
+                        <div class="stats-card floating" style="animation-delay: 3s;">
+                            <div class="stats-icon"
+                                style="background: rgba(0, 123, 255, 0.15); color: var(--accent-blue);">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <div class="stats-number" id="recordsCount">2M+</div>
+                            <div class="stats-label">Medical Records</div>
+                            <div class="stats-desc">Securely stored and encrypted</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Medical Data Upload Section -->
+    <section id="upload" class="upload-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Upload & Manage Your Medical Data</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                Securely store all your medical records in one place with military-grade encryption
+            </p>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-10" data-aos="fade-up" data-aos-delay="200">
+                    <!-- Single Card -->
+                    <div class="card upload-card p-4 shadow-sm">
+
+                        <!-- Drag & Drop Upload Area -->
+                        <div class="upload-container mb-4">
+                            <div class="upload-area" id="uploadArea"
+                                data-logged-in="{% if request.session.user_id %}true{% else %}false{% endif %}">
+                                <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                                <h4>Drag & Drop Your Medical Files</h4>
+                                <p>Upload your medical records, test results, scans, and other health documents securely
+                                </p>
+
+                                {% if request.session.user_id %}
+                                <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.dcm,.xml,.hl7"
+                                    style="display: none;">
+                                {% endif %}
+
+                               {% if request.session.user_id %}
+<a href="{% url 'upload_record' %}" class="upload-btn btn btn-primary mt-3">
+    <i class="fas fa-folder-open me-2"></i>Upload Medical Data
+</a>
+{% else %}
+<a href="{% url 'user_login' %}?next={% url 'upload_record' %}" class="upload-btn btn btn-primary mt-3">
+    <i class="fas fa-sign-in-alt me-2"></i>Login to Upload
+</a>
+{% endif %}
+
+                                <div class="file-types mt-3">
+                                    <span class="file-type-badge">PDF</span>
+                                    <span class="file-type-badge">JPG/PNG</span>
+                                    <span class="file-type-badge">DICOM</span>
+                                    <span class="file-type-badge">HL7</span>
+                                    <span class="file-type-badge">XML</span>
+                                </div>
+                            </div>
+                            <div id="uploadMessages" class="mt-3 text-center"></div>
+                        </div>
+
+                        <!-- Upload Instructions -->
+                        <div class="upload-instructions mb-4">
+                            <h5><i class="fas fa-info-circle me-2"></i> How to Upload Your Medical Data</h5>
+                            <ul class="upload-steps">
+                                <li><i class="fas fa-check-circle"></i> Prepare your medical documents (scans, test
+                                    results, prescriptions, etc.) in digital format</li>
+                                <li><i class="fas fa-check-circle"></i> Drag and drop files into the upload area above
+                                    or click "Browse Files"</li>
+                                <li><i class="fas fa-check-circle"></i> Categorize your files (optional) to help
+                                    organize your medical history</li>
+                                <li><i class="fas fa-check-circle"></i> Set access permissions for doctors or hospitals
+                                    who need to view specific records</li>
+                                <li><i class="fas fa-check-circle"></i> Files are encrypted and stored securely in your
+                                    personal health vault</li>
+                            </ul>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="text-center p-3">
+                                    <div class="stats-icon mb-3"
+                                        style="background: rgba(0, 123, 255, 0.15); color: var(--accent-blue); width: 50px; height: 50px; margin: 0 auto;">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <h6>End-to-End Encryption</h6>
+                                    <p class="text-muted small">Your data is encrypted before it leaves your device</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3">
+                                    <div class="stats-icon mb-3"
+                                        style="background: rgba(111, 66, 193, 0.15); color: var(--accent-purple); width: 50px; height: 50px; margin: 0 auto;">
+                                        <i class="fas fa-user-shield"></i>
+                                    </div>
+                                    <h6>Access Control</h6>
+                                    <p class="text-muted small">You control who can access each document</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="text-center p-3">
+                                    <div class="stats-icon mb-3"
+                                        style="background: rgba(40, 167, 69, 0.15); color: var(--accent-green); width: 50px; height: 50px; margin: 0 auto;">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <h6>AI Organization</h6>
+                                    <p class="text-muted small">Our AI automatically categorizes and tags your files</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+<!-- Appointment Booking Section -->
+<section id="appointments" class="appointment-section">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Book Appointments & Find Care</h2>
+        <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Search and book appointments with
+            verified doctors and hospitals in your area</p>
+        
+        <!-- Search Form -->
+<div class="row justify-content-center mb-4">
+    <div class="col-lg-10" data-aos="fade-up" data-aos-delay="200">
+        <div class="search-container">
+            <div class="search-tabs">
+                <div class="search-tab active" data-tab="doctors">
+                    <i class="fas fa-user-md me-1"></i> Find Doctors
+                </div>
+                <div class="search-tab" data-tab="hospitals">
+                    <i class="fas fa-hospital me-1"></i> Find Hospitals
+                </div>
+                <div class="search-tab" data-tab="specialties">
+                    <i class="fas fa-heartbeat me-1"></i> By Specialty
+                </div>
+            </div>
+            
+            <!-- Search Form - SIMPLIFIED without JavaScript interference -->
+            <form class="search-form" id="searchForm" method="GET" action=".">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control"
+                            placeholder="City or area name" 
+                            value="{{ request.GET.location|default:'' }}"
+                            id="locationInput">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Specialty</label>
+                        <select name="specialty" class="form-control" id="specialtyInput">
+                            <option value="">All Specialties</option>
+                            <option value="Cardiology" {% if request.GET.specialty == 'Cardiology' %}selected{% endif %}>Cardiology</option>
+                            <option value="Dermatology" {% if request.GET.specialty == 'Dermatology' %}selected{% endif %}>Dermatology</option>
+                            <option value="Neurology" {% if request.GET.specialty == 'Neurology' %}selected{% endif %}>Neurology</option>
+                            <option value="Pediatrics" {% if request.GET.specialty == 'Pediatrics' %}selected{% endif %}>Pediatrics</option>
+                            <option value="Orthopedics" {% if request.GET.specialty == 'Orthopedics' %}selected{% endif %}>Orthopedics</option>
+                            <option value="Psychiatry" {% if request.GET.specialty == 'Psychiatry' %}selected{% endif %}>Psychiatry</option>
+                            <option value="General Medicine" {% if request.GET.specialty == 'General Medicine' %}selected{% endif %}>General Medicine</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Search Type</label>
+                        <select name="search_type" class="form-control" id="typeInput">
+                            <option value="doctors" {% if request.GET.search_type != 'hospitals' %}selected{% endif %}>Doctors</option>
+                            <option value="hospitals" {% if request.GET.search_type == 'hospitals' %}selected{% endif %}>Hospitals</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-center">
+                        <button type="submit" class="search-btn" onclick="return true;">
+                            <i class="fas fa-search me-2"></i> Search Now
+                        </button>
+                        {% if request.GET.location or request.GET.specialty %}
+                        <a href="." class="btn btn-outline-secondary ms-2">
+                            <i class="fas fa-times me-2"></i> Clear Filters
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+        <!-- Search Results Section -->
+        <div class="search-results" id="searchResultsSection">
+            
+            {% if request.GET.location or request.GET.specialty %}
+                <!-- Display search summary -->
+                <div class="search-summary mb-4" data-aos="fade-up">
+                    <h4 class="text-center">
+                        <i class="fas fa-search me-2"></i>
+                        Search Results 
+                        {% if request.GET.search_type == 'hospitals' %}
+                            for Hospitals
+                        {% else %}
+                            for Doctors
+                        {% endif %}
+                        {% if request.GET.location %}
+                            in <span class="text-primary">"{{ request.GET.location }}"</span>
+                        {% endif %}
+                        {% if request.GET.specialty %}
+                            specializing in <span class="text-primary">"{{ request.GET.specialty }}"</span>
+                        {% endif %}
+                    </h4>
+                </div>
+
+                <!-- Display filtered results -->
+                <div class="row g-4">
+                    {% if request.GET.search_type != 'hospitals' %}
+                        <!-- Doctor Results -->
+                        {% if filtered_doctors %}
+                            {% for doctor in filtered_doctors %}
+                            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter 1 200 %}">
+                                <div class="doctor-card">
+                                    <a href="{% url 'public_doctor_view' doctor.id %}" class="text-decoration-none"
+                                        style="color: inherit;">
+                                        <div class="doctor-image">
+                                            {% if doctor.image %}
+                                            <img src="{{ doctor.image.url }}" alt="{{ doctor.name }}"
+                                                style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                                            {% else %}
+                                            <i class="fas fa-user-md" style="font-size: 2.5rem; color: var(--accent-blue);"></i>
+                                            {% endif %}
+                                        </div>
+                                    </a>
+                                    <div class="doctor-info">
+                                        <h3 class="doctor-name">Dr. {{ doctor.name }}</h3>
+                                        <div class="doctor-specialty">{{ doctor.specialization }}</div>
+                                        <div class="doctor-location">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ doctor.hospital.name }}, {{ doctor.hospital.location }}
+                                        </div>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                            <span class="ms-2">4.8 ({% widthratio doctor.id 1 100 %} reviews)</span>
+                                        </div>
+                                        <div class="availability">
+                                            <span class="availability-tag">{{ doctor.hospital.name }}</span>
+                                            <span class="availability-tag">Accepting New Patients</span>
+                                            <span class="availability-tag">Insurance Accepted</span>
+                                        </div>
+                                        {% if doctor.bio %}
+                                        <p class="small">{{ doctor.bio|truncatewords:20 }}</p>
+                                        {% else %}
+                                        <p class="small">Experienced {{ doctor.specialization|lower }} with expertise in patient
+                                            care and treatment.</p>
+                                        {% endif %}
+                                        <!-- Action Buttons -->
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'public_doctor_view' doctor.id %}"
+                                                class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-user-md me-1"></i> View Profile
+                                            </a>
+                                            {% if request.session.user_id %}
+                                            <a href="{% url 'user_appoinment' %}?doctor_id={{ doctor.id }}"
+                                                class="btn btn-primary btn-sm">
+                                                <i class="fas fa-calendar-plus me-1"></i> Book Appointment
+                                            </a>
+                                            {% else %}
+                                            <a href="{% url 'choice_login' %}?next={% url 'public_doctor_view' doctor.id %}"
+                                                class="btn btn-primary btn-sm">
+                                                <i class="fas fa-calendar-plus me-1"></i> Book Appointment
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-user-md fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">No doctors found</h4>
+                                <p class="text-muted">Try adjusting your search criteria or search in a different location.</p>
+                            </div>
+                        {% endif %}
+                    
+                    {% else %}
+                        <!-- Hospital Results -->
+                        {% if filtered_hospitals %}
+                            {% for hospital in filtered_hospitals %}
+                            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter 1 200 %}">
+                                <div class="hospital-card">
+                                    <div class="hospital-image">
+                                        {% if hospital.image %}
+                                        <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}"
+                                            style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                                        {% else %}
+                                        <i class="fas fa-hospital" style="font-size: 2.5rem; color: var(--accent-green);"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="hospital-info">
+                                        <h3 class="hospital-name">{{ hospital.name }}</h3>
+                                        <div class="hospital-type">Multi-Specialty Hospital</div>
+                                        <div class="hospital-location">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            {{ hospital.location }}
+                                        </div>
+                                        <div class="rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="far fa-star"></i>
+                                            <span class="ms-2">4.0 ({% widthratio hospital.id 1 200 %} reviews)</span>
+                                        </div>
+                                        <div class="availability">
+                                            <span class="availability-tag">24/7 Emergency</span>
+                                            <span class="availability-tag">Accepting New Patients</span>
+                                            <span class="availability-tag">In-Network Insurance</span>
+                                        </div>
+                                        <p class="small">
+                                            {% if hospital.description %}
+                                                {{ hospital.description|truncatewords:20 }}
+                                            {% else %}
+                                                State-of-the-art facility with comprehensive healthcare services and experienced medical professionals.
+                                            {% endif %}
+                                        </p>
+                                        <a href="{% url 'public_hospital_view' hospital.id %}" class="book-btn">
+                                            <i class="fas fa-hospital-user me-2"></i> View Departments
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-hospital fa-3x text-muted mb-3"></i>
+                                <h4 class="text-muted">No hospitals found</h4>
+                                <p class="text-muted">Try adjusting your search criteria or search in a different location.</p>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+            {% else %}
+                <!-- Default Featured Results -->
+                <div class="featured-section">
+                    <h4 class="text-center mb-4" data-aos="fade-up">Featured Healthcare Providers</h4>
+                    <div class="row g-4">
+                        {% for doctor in featured_doctors %}
+                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter 1 200 %}">
+                            <div class="doctor-card">
+                                <a href="{% url 'public_doctor_view' doctor.id %}" class="text-decoration-none"
+                                    style="color: inherit;">
+                                    <div class="doctor-image">
+                                        {% if doctor.image %}
+                                        <img src="{{ doctor.image.url }}" alt="{{ doctor.name }}"
+                                            style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                                        {% else %}
+                                        <i class="fas fa-user-md" style="font-size: 2.5rem; color: var(--accent-blue);"></i>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                                <div class="doctor-info">
+                                    <h3 class="doctor-name">Dr. {{ doctor.name }}</h3>
+                                    <div class="doctor-specialty">{{ doctor.specialization }}</div>
+                                    <div class="doctor-location">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        {{ doctor.hospital.name }}, {{ doctor.hospital.location }}
+                                    </div>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <span class="ms-2">4.8 ({% widthratio doctor.id 1 100 %} reviews)</span>
+                                    </div>
+                                    <div class="availability">
+                                        <span class="availability-tag">{{ doctor.hospital.name }}</span>
+                                        <span class="availability-tag">Accepting New Patients</span>
+                                        <span class="availability-tag">Insurance Accepted</span>
+                                    </div>
+                                    {% if doctor.bio %}
+                                    <p class="small">{{ doctor.bio|truncatewords:20 }}</p>
+                                    {% else %}
+                                    <p class="small">Experienced {{ doctor.specialization|lower }} with expertise in patient
+                                        care and treatment.</p>
+                                    {% endif %}
+                                    <!-- Action Buttons -->
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'public_doctor_view' doctor.id %}"
+                                            class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-user-md me-1"></i> View Profile
+                                        </a>
+                                        {% if request.session.user_id %}
+                                        <a href="{% url 'user_appoinment' %}?doctor_id={{ doctor.id }}"
+                                            class="btn btn-primary btn-sm">
+                                            <i class="fas fa-calendar-plus me-1"></i> Book Appointment
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'choice_login' %}?next={% url 'public_doctor_view' doctor.id %}"
+                                            class="btn btn-primary btn-sm">
+                                            <i class="fas fa-calendar-plus me-1"></i> Book Appointment
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% for hospital in featured_hospitals %}
+                        <div class="col-lg-6" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter 1 500 %}">
+                            <div class="hospital-card">
+                                <div class="hospital-image">
+                                    {% if hospital.image %}
+                                    <img src="{{ hospital.image.url }}" alt="{{ hospital.name }}"
+                                        style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+                                    {% else %}
+                                    <i class="fas fa-hospital" style="font-size: 2.5rem; color: var(--accent-green);"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="hospital-info">
+                                    <h3 class="hospital-name">{{ hospital.name }}</h3>
+                                    <div class="hospital-type">Multi-Specialty Hospital</div>
+                                    <div class="hospital-location">
+                                        <i class="fas fa-map-marker-alt me-1"></i>
+                                        {{ hospital.location }}
+                                    </div>
+                                    <div class="rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <span class="ms-2">4.0 ({% widthratio hospital.id 1 200 %} reviews)</span>
+                                    </div>
+                                    <div class="availability">
+                                        <span class="availability-tag">24/7 Emergency</span>
+                                        <span class="availability-tag">Accepting New Patients</span>
+                                        <span class="availability-tag">In-Network Insurance</span>
+                                    </div>
+                                    <p class="small">
+                                        {% if hospital.description %}
+                                            {{ hospital.description|truncatewords:20 }}
+                                        {% else %}
+                                            State-of-the-art facility with comprehensive healthcare services and experienced medical professionals.
+                                        {% endif %}
+                                    </p>
+                                    <a href="{% url 'public_hospital_view' hospital.id %}" class="book-btn">
+                                        <i class="fas fa-hospital-user me-2"></i> View Departments
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+    <!-- Services Section -->
+    <section id="services" class="services-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Advanced Healthcare Services</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Experience the next generation of
+                medical technology designed for patients, doctors, and hospitals</p>
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h4>Medical Data Upload</h4>
+                                <p>Securely store all your medical records with automatic organization</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <h4>Medical Data Upload</h4>
+                                <p>Upload any type of medical document with military-grade encryption. Our AI
+                                    automatically categorizes your files, extracts key information, and creates a
+                                    searchable health timeline.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i class="fas fa-calendar-check"></i>
+                                <h4>Appointment Booking</h4>
+                                <p>Easy scheduling with doctors and hospitals with real-time availability</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <i class="fas fa-calendar-check"></i>
+                                <h4>Appointment Booking</h4>
+                                <p>Our intelligent booking system shows real-time availability, sends reminders, and
+                                    allows rescheduling with just a few clicks. Integrated with doctor calendars for
+                                    seamless scheduling.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i class="fas fa-user-md"></i>
+                                <h4>Doctor Collaboration</h4>
+                                <p>Grant controlled access to medical professionals with time-limited permissions</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <i class="fas fa-user-md"></i>
+                                <h4>Doctor Collaboration</h4>
+                                <p>Share specific records with doctors, set access expiration dates, and receive
+                                    notifications when your data is accessed or annotated. Perfect for second opinions
+                                    and specialist consultations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="500">
+                    <div class="flip-card">
+                        <div class="flip-card-inner">
+                            <div class="flip-card-front">
+                                <i class="fas fa-brain"></i>
+                                <h4>AI Health Insights</h4>
+                                <p>Advanced analytics for personalized health recommendations</p>
+                            </div>
+                            <div class="flip-card-back">
+                                <i class="fas fa-brain"></i>
+                                <h4>AI Health Insights</h4>
+                                <p>Our machine learning algorithms analyze your health data to provide early warnings,
+                                    personalized recommendations, and predictive health scores. Get insights you won't
+                                    find anywhere else.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Cutting-Edge Technology for All Users</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Tailored experiences for patients,
+                doctors, and hospitals with specialized tools</p>
+            <div class="row mb-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card text-center">
+                        <div class="mb-3">
+                            <div class="stats-icon"
+                                style="background: rgba(0, 123, 255, 0.2); color: var(--accent-blue); margin: 0 auto; width: 55px; height: 55px;">
+                                <i class="fas fa-user"></i>
+                            </div>
+                        </div>
+                        <h3 class="h5">Patient Features</h3>
+                        <ul class="text-start mt-3 small">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Medical record storage &
+                                organization</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Doctor appointment booking
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Hospital search & comparison
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Medication reminders</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Health analytics dashboard
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Emergency access sharing
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="glass-card text-center">
+                        <div class="mb-3">
+                            <div class="stats-icon"
+                                style="background: rgba(111, 66, 193, 0.2); color: var(--accent-purple); margin: 0 auto; width: 55px; height: 55px;">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                        </div>
+                        <h3 class="h5">Doctor Features</h3>
+                        <ul class="text-start mt-3 small">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Digital appointment calendar
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Patient record access (with
+                                permission)</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Telemedicine integration
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> e-Prescription system</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Billing & insurance
+                                processing</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Patient communication portal
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="glass-card text-center">
+                        <div class="mb-3">
+                            <div class="stats-icon"
+                                style="background: rgba(40, 167, 69, 0.2); color: var(--accent-green); margin: 0 auto; width: 55px; height: 55px;">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                        </div>
+                        <h3 class="h5">Hospital Features</h3>
+                        <ul class="text-start mt-3 small">
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Department management system
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Staff scheduling & payroll
+                            </li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Patient admission &
+                                discharge</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Inventory & equipment
+                                tracking</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Analytics & reporting
+                                dashboard</li>
+                            <li class="mb-2"><i class="fas fa-check text-success me-2"></i> Inter-hospital collaboration
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="feature-icon" style="background: rgba(0, 123, 255, 0.15); color: var(--accent-blue);">
+                        <i class="fas fa-file-medical-alt"></i>
+                    </div>
+                    <h3 class="h5">Smart Document Processing</h3>
+                    <p class="small">AI-powered extraction of key information from uploaded medical documents,
+                        automatically organizing them into your health timeline.</p>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-primary me-2">All Users</span>
+                        <span>Auto-Categorization</span>
+                    </div>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="600">
+                    <div class="feature-icon"
+                        style="background: rgba(111, 66, 193, 0.15); color: var(--accent-purple);">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="h5">Role-Based Access Control</h3>
+                    <p class="small">Different permission levels for patients, doctors, and hospitals ensure data
+                        privacy while enabling necessary collaboration.</p>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-success me-2">Security</span>
+                        <span>Granular Permissions</span>
+                    </div>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="700">
+                    <div class="feature-icon" style="background: rgba(40, 167, 69, 0.15); color: var(--accent-green);">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="h5">AI Health Assistant</h3>
+                    <p class="small">24/7 intelligent assistant that can explain medical terms, remind you of
+                        medications, and alert you to potential health risks.</p>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-info me-2">AI</span>
+                        <span>Patient Focused</span>
+                    </div>
+                </div>
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="800">
+                    <div class="feature-icon" style="background: rgba(0, 123, 255, 0.15); color: var(--accent-blue);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="h5">Analytics Dashboard</h3>
+                    <p class="small">Comprehensive analytics for all user types - patients see health trends, doctors
+                        track outcomes, hospitals monitor efficiency.</p>
+                    <div class="d-flex align-items-center">
+                        <span class="badge bg-warning me-2">Pro</span>
+                        <span>Custom Reports</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section
+    <section id="security" class="security-section">
+        <div class="container">
+            <h2 class="section-title" data-aos="fade-up">Military-Grade Security for All Users</h2>
+            <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">Your privacy is our highest priority
+                with cutting-edge protection technologies</p>
+            <div class="row justify-content-center">
+                <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+                    <div class="security-container">
+                        <div class="lock-container">
+                            <i class="fas fa-lock lock-icon" id="lockIcon"></i>
+                        </div>
+                        <div class="key-input">
+                            <label for="securityKey" class="form-label">Enter Your Security Key</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-key"></i>
+                                </span>
+                                <input type="password" class="form-control" id="securityKey"
+                                    placeholder="Enter your 6-8 digit security key">
+                            </div>
+                            <button class="btn btn-security w-100" type="button" id="unlockBtn">
+                                <i class="fas fa-unlock-alt me-2"></i> Unlock My Medical Data
+                            </button>
+                            <div class="text-center mt-2">
+                                <small class="text-muted">Your data is protected with end-to-end quantum
+                                    encryption</small>
+                            </div>
+                        </div>
+                        <div class="security-features">
+                            <h4 class="text-center mb-3" style="color: var(--accent-blue);">Advanced Security Features
+                            </h4>
+                            <div class="security-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="security-feature-content">
+                                    <h5>Zero-Knowledge Architecture</h5>
+                                    <p class="small">Even we cannot access your data without your explicit permission
+                                        and security key.</p>
+                                </div>
+                            </div>
+                            <div class="security-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="security-feature-content">
+                                    <h5>Role-Based Encryption</h5>
+                                    <p class="small">Different encryption keys for patients, doctors, and hospitals
+                                        ensure appropriate data access levels.</p>
+                                </div>
+                            </div>
+                            <div class="security-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="security-feature-content">
+                                    <h5>Blockchain Verification</h5>
+                                    <p class="small">Every access attempt and data modification is recorded on an
+                                        immutable blockchain ledger.</p>
+                                </div>
+                            </div>
+                            <div class="security-feature">
+                                <i class="fas fa-check-circle"></i>
+                                <div class="security-feature-content">
+                                    <h5>Biometric Authentication</h5>
+                                    <p class="small">Optional fingerprint or facial recognition for additional security
+                                        on supported devices.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Security Key Access Section -->
+    <section class="security-access-section" style="background: var(--secondary-bg); padding: 80px 0;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title" data-aos="fade-up">Secure Medical Data Access</h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Access your medical records securely using your username and security key
+                    </p>
+                    <div class="security-access-card" data-aos="fade-up" data-aos-delay="200"
+                        style="background: #ffffff; border-radius: 15px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 30px;">
+                        <i class="fas fa-shield-alt"
+                            style="font-size: 3rem; color: var(--accent-blue); margin-bottom: 20px;"></i>
+                        <h4>Quick Access to Your Medical Records</h4>
+                        <p class="text-muted mb-4">Enter your credentials to securely view your medical data</p>
+                        <a href="{% url 'security_key_access' %}" class="btn btn-nav"
+                            style="padding: 12px 30px; font-weight: 600;">
+                            <i class="fas fa-unlock me-2"></i> Access with Security Key
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-container">
+                <h2 class="cta-title">Join the Healthcare Revolution</h2>
+                <p class="cta-subtitle">Whether you're a patient, doctor, or hospital administrator, MediFutura offers
+                    tailored solutions to transform your healthcare experience.</p>
+                <a href="{% url 'choice_login' %}" class="glow-btn">
+                    <i class="fas fa-user-plus me-2"></i> Create Your Free Account Now
+                </a>
+                <div class="mt-3 d-flex justify-content-center flex-wrap gap-3">
+                    <div class="text-center">
+                        <div class="text-primary" style="font-size: 1.5rem;"><i class="fas fa-user"></i></div>
+                        <div class="small">Patient Account</div>
+                    </div>
+                    <div class="text-center">
+                        <div style="font-size: 1.5rem; color: var(--accent-purple);"><i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="small">Doctor Account</div>
+                    </div>
+                    <div class="text-center">
+                        <div style="font-size: 1.5rem; color: var(--accent-green);"><i class="fas fa-hospital"></i>
+                        </div>
+                        <div class="small">Hospital Account</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feedback Section -->
+    <section class="py-5" style="background: var(--secondary-bg);" id="feedback">
+        <div class="container">
+            <h2 class="section-title text-center mb-4" data-aos="fade-up">Community Feedback</h2>
+            <p class="section-subtitle text-center mb-5" data-aos="fade-up" data-aos-delay="100">
+                Hear from patients, doctors, and hospitals using MediShare
+            </p>
+
+            <!-- Feedback Submission Form -->
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8">
+                    <div class="card p-4 shadow-sm">
+                        <h5 class="mb-3">Share Your Experience</h5>
+                        <form method="POST" action="{% url 'home' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <input type="text" name="name" class="form-control" placeholder="Your Name"
+                                        required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <select name="role" class="form-control" required>
+                                        <option value="">Select Your Role</option>
+                                        <option value="patient">Patient</option>
+                                        <option value="doctor">Doctor</option>
+                                        <option value="hospital">Hospital</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <textarea name="message" class="form-control" rows="3"
+                                        placeholder="Your feedback..." required></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-nav w-100">Submit Feedback</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Display Feedback Cards -->
+            {% if feedbacks %}
+            <div class="row g-4">
+                {% for fb in feedbacks %}
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter|add:100 }}">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <div class="d-flex align-items-center mb-3">
+                                {% if fb.role == 'patient' %}
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                {% elif fb.role == 'doctor' %}
+                                <div class="bg-purple text-white rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px; background-color: var(--accent-purple);">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                {% else %}
+                                <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="fas fa-hospital"></i>
+                                </div>
+                                {% endif %}
+                                <div class="ms-3">
+                                    <h6 class="mb-0">{{ fb.name }}</h6>
+                                    <small class="text-muted">
+                                        {% if fb.role == 'patient' %}Patient
+                                        {% elif fb.role == 'doctor' %}Doctor
+                                        {% else %}Hospital Representative{% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                            <p class="card-text flex-grow-1">{{ fb.message }}</p>
+                            <small class="text-muted mt-2">Submitted on {{ fb.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center text-muted">No feedback yet. Be the first to share!</div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotToggle">
+        <i class="fas fa-robot"></i>
+    </div>
+    <div class="chatbot-container" id="chatbotContainer">
+        <div class="chatbot-header">
+            <h5><i class="fas fa-robot"></i> MediFutura Assistant</h5>
+            <span class="chatbot-status">Online</span>
+            <button class="chatbot-close" id="chatbotClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chatbot-messages" id="chatMessages">
+            <div class="message bot-message">
+                Hello! I'm your personal MediFutura assistant. I can help you with uploading medical data, booking
+                appointments, finding doctors, or understanding our platform features. How can I assist you today?
+            </div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" id="userInput" placeholder="Ask me anything about MediFutura...">
+            <button id="sendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h3 class="footer-logo">MediFutura</h3>
+                    <p class="footer-desc small">Revolutionizing healthcare through cutting-edge technology,
+                        uncompromising security, and seamless collaboration between patients, doctors, and providers
+                        worldwide.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">For Patients</h5>
+                    <div class="footer-links">
+                        <a href="#upload">Upload Medical Data</a>
+                        <a href="#appointments">Book Appointments</a>
+                        <a href="#dashboard">Medical Records</a>
+                        <a href="#features">Patient Features</a>
+                        <a href="#">Health Resources</a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h5 class="footer-title">For Professionals</h5>
+                    <div class="footer-links">
+                        <a href="#">Doctor Registration</a>
+                        <a href="#">Hospital Partnership</a>
+                        <a href="#features">Provider Features</a>
+                        <a href="#">Billing Solutions</a>
+                        <a href="#">API Integration</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h5 class="footer-title">Contact & Support</h5>
+                    <div class="footer-links">
+                        <a href="#"><i class="fas fa-envelope me-2"></i> support@medifutura.com</a>
+                        <a href="#"><i class="fas fa-phone me-2"></i> +1 (800) 123-4567</a>
+                        <a href="#"><i class="fas fa-map-marker-alt me-2"></i> 123 Innovation Drive, San Francisco,
+                            CA</a>
+                        <a href="#"><i class="fas fa-comments me-2"></i> Live Chat Support</a>
+                        <a href="#"><i class="fas fa-headset me-2"></i> 24/7 Customer Service</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="small">&copy; 2023 MediFutura. All rights reserved.</div>
+                <div class="footer-links-inline">
+                    <a href="#" class="small">Privacy Policy</a>
+                    <a href="#" class="small">Terms of Service</a>
+                    <a href="#" class="small">Cookie Policy</a>
+                    <a href="#" class="small">HIPAA Compliance</a>
+                    <a href="#" class="small">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="{% static 'home.js' %}"></script> 
+    <script src="{% static 'upload.js' %}"></script> 
+
+
+    <!-- Debug Script -->
+<script>
+// Debug: Check what's being clicked
+document.addEventListener('click', function(e) {
+    if (e.target.closest('#searchForm') || e.target.closest('.search-btn')) {
+        console.log('Search form clicked - this should NOT redirect');
+        console.log('Target:', e.target);
+        console.log('Current URL:', window.location.href);
+    }
+});
+
+// Debug: Check if there are multiple elements with the same ID
+console.log('Browse buttons found:', document.querySelectorAll('[id*="browse"]').length);
+document.querySelectorAll('[id*="browse"]').forEach((el, index) => {
+    console.log(`Browse button ${index}:`, el.id, el);
+});
+
+// Debug: Check search form
+const searchForm = document.getElementById('searchForm');
+if (searchForm) {
+    console.log('Search form found, action:', searchForm.action);
+    
+    // Remove any existing event listeners by replacing the form
+    const newForm = searchForm.cloneNode(true);
+    searchForm.parentNode.replaceChild(newForm, searchForm);
+    
+    console.log('Search form replaced to remove event listeners');
+}
+</script>
+</body>
+
+</html>
