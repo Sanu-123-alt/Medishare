@@ -149,7 +149,7 @@ MAX_OTP_ATTEMPTS = 3
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['yourappname.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['medishare-a7d3.onrender.com', 'localhost', '127.0.0.1']
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
